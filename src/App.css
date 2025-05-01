@@ -1,0 +1,38 @@
+/* Global CSS to selectively hide scrollbar while maintaining functionality */
+html, body, #root {
+  /* Remove restrictive !important rules */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  overflow-x: hidden;
+}
+
+/* Hide webkit scrollbar appearance but keep functionality */
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar, 
+#root::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  background: transparent;
+}
+
+/* Keep ScrollArea scrollable but with hidden scrollbar */
+[data-radix-scroll-area-viewport] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide Shadcn ScrollArea scrollbar track */
+.scrollbar {
+  display: none;
+}
+
+/* Make sure links are clickable */
+a, button, input, textarea, select, .clickable {
+  position: relative;
+  z-index: 50;
+}
