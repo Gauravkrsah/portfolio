@@ -67,9 +67,9 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl">
+      <DialogContent className="sm:max-w-md max-w-[90vw] bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl p-4">
         <DialogHeader>
-          <DialogTitle className="text-lg text-white flex items-center gap-2">
+          <DialogTitle className="text-base text-white flex items-center gap-2">
             <MessageCircle className="h-4 w-4 text-[#FFB600]" />
             Send a Message
           </DialogTitle>
@@ -78,7 +78,7 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-3 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-2 mt-1">
           <div className="space-y-1.5">
             <label htmlFor="name" className="block text-xs font-medium text-neutral-300">
               Name
@@ -91,7 +91,7 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
               onChange={handleChange}
               required
               placeholder="Your name"
-              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-9"
+              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-8"
             />
           </div>
           
@@ -107,7 +107,7 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
               onChange={handleChange}
               required
               placeholder="your@email.com"
-              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-9"
+              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-8"
             />
           </div>
           
@@ -122,7 +122,7 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="Your phone number"
-              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-9"
+              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 h-8"
             />
           </div>
           
@@ -136,16 +136,16 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ open, onOpenChange }) => {
               value={formData.message}
               onChange={handleChange}
               required
-              rows={3}
+              rows={2}
               placeholder="Your message"
-              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 resize-none"
+              className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 resize-none"
             />
           </div>
           
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2 text-sm bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-md transition-all disabled:opacity-70 flex items-center justify-center gap-2 h-9"
+            className="w-full py-1.5 text-xs bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-md transition-all disabled:opacity-70 flex items-center justify-center gap-2 h-8"
           >
             {isSubmitting ? "Sending..." : (
               <>

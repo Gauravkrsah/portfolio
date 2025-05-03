@@ -95,9 +95,9 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl max-h-[80vh] flex flex-col rounded-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-[#FFB600]/40 to-[#e2eeff]/40 p-3 border-b border-neutral-800 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+      <DialogContent className="sm:max-w-md max-w-[90vw] p-0 bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl max-h-[70vh] flex flex-col rounded-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-[#FFB600]/40 to-[#e2eeff]/40 p-2 border-b border-neutral-800 flex justify-between items-center">
+          <div className="flex items-center gap-1.5">
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff]">
               <Bot className="h-4 w-4 text-[#151515]" />
             </div>
@@ -109,7 +109,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button 
               onClick={clearConversation}
               className="p-1 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-red-400 transition-colors"
@@ -126,13 +126,13 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gradient-to-b from-neutral-950 to-neutral-900">
+        <div className="flex-1 overflow-y-auto p-2 space-y-2 bg-gradient-to-b from-neutral-950 to-neutral-900">
           {messages.map((message) => (
             <div 
               key={message.id} 
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
             >
-              <div className="flex gap-2 max-w-[85%]">
+              <div className="flex gap-1.5 max-w-[85%]">
                 {message.sender === 'bot' && (
                   <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
                     <Bot className="h-3.5 w-3.5 text-[#151515]" />
@@ -163,7 +163,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
           
           {isTyping && (
             <div className="flex justify-start animate-fade-in">
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
                   <Bot className="h-3.5 w-3.5 text-[#151515]" />
                 </div>
@@ -182,14 +182,14 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
           <div ref={messagesEndRef} />
         </div>
         
-        <form onSubmit={handleSendMessage} className="border-t border-neutral-800 p-3 bg-neutral-900/50">
-          <div className="flex items-center space-x-1.5">
+        <form onSubmit={handleSendMessage} className="border-t border-neutral-800 p-2 bg-neutral-900/50">
+          <div className="flex items-center space-x-1">
             <Input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Type a message..."
-              className="flex-1 px-3 py-1.5 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
+              className="flex-1 px-2 py-1 h-8 rounded-full border border-neutral-700 bg-neutral-800/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
             />
             <Button
               type="submit"

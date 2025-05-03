@@ -119,9 +119,9 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md max-w-[90vw] bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl max-h-[80vh] overflow-y-auto p-4">
         <DialogHeader>
-          <DialogTitle className="text-lg text-white flex items-center gap-2">
+          <DialogTitle className="text-base text-white flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#FFB600]" />
             Schedule a Meeting
           </DialogTitle>
@@ -130,14 +130,14 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex items-center justify-center py-3">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#FFB600]/20 to-[#e2eeff]/20 flex items-center justify-center">
-            <CalendarIcon className="h-7 w-7 text-[#FFB600]" />
+        <div className="flex items-center justify-center py-2">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFB600]/20 to-[#e2eeff]/20 flex items-center justify-center">
+            <CalendarIcon className="h-5 w-5 text-[#FFB600]" />
           </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="space-y-1.5">
               <label htmlFor="name" className="block text-xs font-medium text-neutral-300">
                 Name
@@ -149,7 +149,7 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Your name"
-                className="w-full px-3 py-2 h-9 rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
+                className="w-full px-3 py-1.5 h-8 rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
               />
             </div>
             
@@ -164,7 +164,7 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Your email"
-                className="w-full px-3 py-2 h-9 rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
+                className="w-full px-3 py-1.5 h-8 rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
               />
             </div>
           </div>
@@ -180,11 +180,11 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
               onChange={(e) => setSubject(e.target.value)}
               required
               placeholder="Meeting subject"
-              className="w-full px-3 py-2 h-9 rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
+              className="w-full px-3 py-1.5 h-8 rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500"
             />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="space-y-1.5">
               <label className="block text-xs font-medium text-neutral-300">
                 Date
@@ -194,7 +194,7 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full h-9 justify-start text-left text-sm font-normal border border-neutral-800 bg-neutral-900/50 text-white hover:bg-neutral-800 hover:text-white",
+                      "w-full h-8 justify-start text-left text-xs font-normal border border-neutral-800 bg-neutral-900/50 text-white hover:bg-neutral-800 hover:text-white",
                       !date && "text-neutral-500"
                     )}
                   >
@@ -220,7 +220,7 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
                 Time
               </label>
               <Select onValueChange={setTime}>
-                <SelectTrigger className="w-full h-9 border border-neutral-800 bg-neutral-900/50 text-sm text-white">
+                <SelectTrigger className="w-full h-8 border border-neutral-800 bg-neutral-900/50 text-xs text-white">
                   <SelectValue placeholder="Select time">
                     <div className="flex items-center">
                       <Clock className="mr-2 h-3.5 w-3.5 text-neutral-400" />
@@ -228,9 +228,9 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
                     </div>
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-neutral-900 border border-neutral-800 text-white max-h-60">
+                <SelectContent className="bg-neutral-900 border border-neutral-800 text-white max-h-40">
                   {timeSlots.map((slot) => (
-                    <SelectItem key={slot} value={slot} className="hover:bg-neutral-800 text-sm">
+                    <SelectItem key={slot} value={slot} className="hover:bg-neutral-800 text-xs">
                       {slot}
                     </SelectItem>
                   ))}
@@ -247,16 +247,16 @@ const SchedulePopup = ({ open, onOpenChange }: SchedulePopupProps): JSX.Element 
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              rows={3}
+              rows={2}
               placeholder="What would you like to discuss?"
-              className="w-full px-3 py-2 rounded-md border border-neutral-800 bg-neutral-900/50 text-sm text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 resize-none"
+              className="w-full px-3 py-1.5 rounded-md border border-neutral-800 bg-neutral-900/50 text-xs text-white focus:ring-1 focus:ring-[#FFB600] placeholder:text-neutral-500 resize-none"
             />
           </div>
           
           <Button
             type="submit"
             disabled={isSubmitting || !date || !time}
-            className="w-full py-2 h-9 text-sm bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-md transition-all disabled:opacity-70"
+            className="w-full py-1.5 h-8 text-xs bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-md transition-all disabled:opacity-70"
           >
             {isSubmitting ? "Scheduling..." : "Schedule Meeting"}
           </Button>

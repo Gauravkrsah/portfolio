@@ -13,9 +13,9 @@ const SubscribePopup: React.FC<SubscribePopupProps> = ({ open, onOpenChange }) =
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl">
+      <DialogContent className="sm:max-w-md max-w-[90vw] bg-gradient-to-br from-[#151515] to-neutral-900 border border-[#FFB600]/30 shadow-xl p-4">
         <DialogHeader>
-          <DialogTitle className="text-lg text-white flex items-center gap-2">
+          <DialogTitle className="text-base text-white flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#FFB600]" />
             Subscribe to Our Newsletter
           </DialogTitle>
@@ -24,8 +24,8 @@ const SubscribePopup: React.FC<SubscribePopupProps> = ({ open, onOpenChange }) =
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex items-center justify-center py-3">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#FFB600]/20 to-[#e2eeff]/20 flex items-center justify-center">
+        <div className="flex items-center justify-center py-2">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFB600]/20 to-[#e2eeff]/20 flex items-center justify-center">
             <Mail className="h-7 w-7 text-[#FFB600]" />
           </div>
         </div>

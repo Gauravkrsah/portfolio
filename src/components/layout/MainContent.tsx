@@ -24,8 +24,8 @@ const MainContent: React.FC = () => {
       {/* Removed global background animations */}
       
       {/* Maintain original scrolling behavior */}
-      <ScrollArea className="h-screen w-full">
-        <div className="w-full relative z-10">
+      <ScrollArea className="h-screen w-full pb-14 lg:pb-0">
+        <div className="w-full relative z-10 pb-14 lg:pb-0">
           {/* Each section with its own styling */}
           <HeroSection />
           <FeaturedProjects />

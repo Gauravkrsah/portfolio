@@ -14,7 +14,7 @@ import Contacts from "./pages/Contacts";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminLogin from "./pages/Admin/Login";
-import { ThemeProvider } from '@/hooks/use-theme';
+ 
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { initializeApp, disableRLS } from './lib/services/appInitializer';
@@ -55,6 +55,15 @@ const App: React.FC = () => {
   const [isScheduleOpen, setIsScheduleOpen] = React.useState(false);
   const [isInitialized, setIsInitialized] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
+  
+  // Set fixed dark theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const root = window.document.documentElement;
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+  }, []);
   const isMobile = useIsMobile();
 
   // Initialize the application and disable RLS
@@ -109,7 +118,6 @@ const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <TooltipProvider>
           <AuthProvider>
             <BrowserRouter>
@@ -145,32 +153,6 @@ const App: React.FC = () => {
               </Routes>
             </BrowserRouter>
             
-            {/* Mobile floating action buttons */}
-            {isMobile && (
-              <div className="fixed bottom-4 left-4 z-40 flex flex-col gap-2">
-                <Button 
-                  size="icon" 
-                  className="h-10 w-10 rounded-full bg-[#FFB600] hover:bg-[#FFB600]/90 shadow-lg text-[#151515]"
-                  onClick={() => setIsMessageOpen(true)}
-                >
-                  <Mail className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="icon" 
-                  className="h-10 w-10 rounded-full bg-[#FFB600] hover:bg-[#FFB600]/90 shadow-lg text-[#151515]"
-                  onClick={() => setIsChatOpen(true)}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="icon" 
-                  className="h-10 w-10 rounded-full bg-[#FFB600] hover:bg-[#FFB600]/90 shadow-lg text-[#151515]"
-                  onClick={() => setIsScheduleOpen(true)}
-                >
-                  <Calendar className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
             
             {/* Global Popups */}
             <SubscribePopup 
@@ -192,7 +174,6 @@ const App: React.FC = () => {
           <Toaster />
           <Sonner />
         </TooltipProvider>
-      </ThemeProvider>
     </QueryClientProvider>
   );
 };

@@ -65,7 +65,7 @@ const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-neutral-300 max-w-lg text-base"
+              className="text-neutral-300 max-w-lg text-sm sm:text-base"
             >
               I build exceptional digital experiences that combine cutting-edge technology with 
               intuitive design. Specializing in modern web applications, responsive interfaces, 
@@ -77,19 +77,19 @@ const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-wrap gap-5 mt-8"
+              className="flex flex-wrap gap-3 sm:gap-5 mt-6 sm:mt-8"
             >
               <Button 
-                className="group bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-full px-7 py-6 transition shadow-md hover:shadow-xl flex items-center gap-2 text-base"
+                className="group bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-full px-4 sm:px-7 py-2 sm:py-6 transition shadow-md hover:shadow-xl flex items-center gap-1 sm:gap-2 text-xs sm:text-base"
                 onClick={handleContactClick}
               >
                 Let's Connect
-                <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
               <Button 
                 variant="outline"
-                className="rounded-full border border-white/10 hover:border-[#FFB600]/30 bg-white/5 px-7 py-6 hover:bg-[#FFB600]/10 text-white transition flex items-center gap-2 text-base"
+                className="rounded-full border border-white/10 hover:border-[#FFB600]/30 bg-white/5 px-4 sm:px-7 py-2 sm:py-6 hover:bg-[#FFB600]/10 text-white transition flex items-center gap-1 sm:gap-2 text-xs sm:text-base"
                 onClick={handleScheduleClick}
               >
                 <Calendar className="h-5 w-5" />
@@ -113,11 +113,11 @@ const HeroSection: React.FC = () => {
                   
                   {/* Video info */}
                   <div className="absolute top-6 left-6 z-20">
-                    <h2 className="text-3xl font-bold text-white">PORTFOLIO</h2>
-                    <h2 className="text-3xl font-bold text-[#FFB600]">SHOWCASE</h2>
+                    <h2 className="text-xl sm:text-3xl font-bold text-white">PORTFOLIO</h2>
+                    <h2 className="text-xl sm:text-3xl font-bold text-[#FFB600]">SHOWCASE</h2>
                     <div className="mt-2">
-                      <p className="text-sm text-white/80 uppercase tracking-widest">CREATIVE</p>
-                      <p className="text-sm text-white/80 uppercase tracking-widest">DEVELOPMENT</p>
+                      <p className="text-xs sm:text-sm text-white/80 uppercase tracking-widest">CREATIVE</p>
+                      <p className="text-xs sm:text-sm text-white/80 uppercase tracking-widest">DEVELOPMENT</p>
                     </div>
                   </div>
                   
@@ -134,7 +134,7 @@ const HeroSection: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <div className="h-20 w-20 rounded-full bg-[#FFB600] flex items-center justify-center shadow-lg shadow-[#FFB600]/30 hover:shadow-xl hover:shadow-[#FFB600]/40 transition-all">
+                    <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full bg-[#FFB600] flex items-center justify-center shadow-lg shadow-[#FFB600]/30 hover:shadow-xl hover:shadow-[#FFB600]/40 transition-all">
                       <Play 
                         className="h-8 w-8 text-[#151515] ml-1" 
                         fill="#151515"
@@ -160,11 +160,11 @@ const HeroSection: React.FC = () => {
             </Dialog>
             
             {/* Tech stack badges */}
-            <div className="flex flex-wrap gap-3 mt-6 justify-center">
+            <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6 justify-center">
               {['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'UI/UX'].map((tech) => (
                 <span 
                   key={tech}
-                  className="px-4 py-1.5 bg-[#FFB600]/10 border border-[#FFB600]/20 rounded-full text-sm text-neutral-200 hover:border-[#FFB600]/40 hover:bg-[#FFB600]/15 transition-all"
+                  className="px-3 sm:px-4 py-1 sm:py-1.5 bg-[#FFB600]/10 border border-[#FFB600]/20 rounded-full text-xs sm:text-sm text-neutral-200 hover:border-[#FFB600]/40 hover:bg-[#FFB600]/15 transition-all"
                 >
                   {tech}
                 </span>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import MobileNavbar from '@/components/layout/MobileNavbar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Calendar, ArrowRight, Search, Loader2 } from 'lucide-react';
@@ -64,12 +65,19 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#151515] text-white">
-      <div className="sticky top-0 h-screen">
-        <LeftSidebar />
-      </div>
-      <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-screen">
+    <div className="flex flex-col min-h-screen bg-[#151515] text-white">
+      {/* Mobile navbar - only visible on mobile */}
+      <MobileNavbar />
+      
+      <div className="flex flex-1 pt-[60px] lg:pt-0">
+        {/* Left sidebar - hidden on mobile */}
+        <div className="hidden lg:block sticky top-0 h-screen">
+          <LeftSidebar />
+        </div>
+        
+        {/* Main content - always visible */}
+        <main className="flex-1 overflow-hidden">
+          <ScrollArea className="h-screen pb-14 lg:pb-0">
           <div className="p-4 sm:p-6 max-w-6xl mx-auto">
             <div className={cn(
               "transition-all duration-700",
@@ -171,10 +179,13 @@ const Projects: React.FC = () => {
               )}
             </div>
           </div>
-        </ScrollArea>
-      </main>
-      <div className="sticky top-0 h-screen">
-        <RightSidebar />
+          </ScrollArea>
+        </main>
+        
+        {/* Right sidebar - hidden on mobile */}
+        <div className="hidden lg:block sticky top-0 h-screen">
+          <RightSidebar />
+        </div>
       </div>
     </div>
   );

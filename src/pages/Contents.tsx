@@ -87,7 +87,7 @@ const Contents: React.FC = () => {
         
         {/* Main content - always visible */}
         <main className="flex-1 overflow-hidden">
-          <ScrollArea className="h-screen">
+          <ScrollArea className="h-screen pb-14 lg:pb-0">
             <div className="p-6 lg:p-8 max-w-6xl mx-auto">
               <div className={cn(
                 "transition-all duration-700",

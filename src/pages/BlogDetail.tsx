@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import MobileNavbar from '@/components/layout/MobileNavbar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ArrowLeft, Calendar, User, Tag, Share2, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -45,15 +46,25 @@ const BlogDetail: React.FC = () => {
  
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-[#151515] text-white">
-        <div className="sticky top-0 h-screen">
-          <LeftSidebar />
-        </div>
-        <main className="flex-1 p-8 flex justify-center items-center">
-          <Loader2 className="h-12 w-12 animate-spin text-[#FFB600]" />
-        </main>
-        <div className="sticky top-0 h-screen">
-          <RightSidebar />
+      <div className="flex flex-col min-h-screen bg-[#151515] text-white">
+        {/* Mobile navbar - only visible on mobile */}
+        <MobileNavbar />
+        
+        <div className="flex flex-1 pt-[60px] lg:pt-0">
+          {/* Left sidebar - hidden on mobile */}
+          <div className="hidden lg:block sticky top-0 h-screen">
+            <LeftSidebar />
+          </div>
+          
+          {/* Main content - always visible */}
+          <main className="flex-1 p-8 flex justify-center items-center">
+            <Loader2 className="h-12 w-12 animate-spin text-[#FFB600]" />
+          </main>
+          
+          {/* Right sidebar - hidden on mobile */}
+          <div className="hidden lg:block sticky top-0 h-screen">
+            <RightSidebar />
+          </div>
         </div>
       </div>
     );
@@ -61,110 +72,128 @@ const BlogDetail: React.FC = () => {
 
   if (error || !blog) {
     return (
-      <div className="flex min-h-screen bg-[#151515] text-white">
-        <div className="sticky top-0 h-screen">
-          <LeftSidebar />
-        </div>
-        <main className="flex-1 p-8 flex flex-col justify-center items-center">
-          <h1 className="text-2xl font-bold mb-4">Blog Not Found</h1>
-          <p className="text-gray-400 mb-6">The blog post you're looking for doesn't exist or has been removed.</p>
-          <Link to="/blogs" className="flex items-center text-[#FFB600] hover:text-[#e2eeff]">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blogs
-          </Link>
-        </main>
-        <div className="sticky top-0 h-screen">
-          <RightSidebar />
+      <div className="flex flex-col min-h-screen bg-[#151515] text-white">
+        {/* Mobile navbar - only visible on mobile */}
+        <MobileNavbar />
+        
+        <div className="flex flex-1 pt-[60px] lg:pt-0">
+          {/* Left sidebar - hidden on mobile */}
+          <div className="hidden lg:block sticky top-0 h-screen">
+            <LeftSidebar />
+          </div>
+          
+          {/* Main content - always visible */}
+          <main className="flex-1 p-8 flex flex-col justify-center items-center">
+            <h1 className="text-2xl font-bold mb-4">Blog Not Found</h1>
+            <p className="text-gray-400 mb-6">The blog post you're looking for doesn't exist or has been removed.</p>
+            <Link to="/blogs" className="flex items-center text-[#FFB600] hover:text-[#e2eeff]">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blogs
+            </Link>
+          </main>
+          
+          {/* Right sidebar - hidden on mobile */}
+          <div className="hidden lg:block sticky top-0 h-screen">
+            <RightSidebar />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-[#151515] text-white">
-      <div className="sticky top-0 h-screen">
-        <LeftSidebar />
-      </div>
-      <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-screen">
-          <div className="p-8">
-            <div className="max-w-3xl mx-auto">
-              <Link to="/blogs" className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blogs
-              </Link>
-              
-              <article className="space-y-8">
-                <header className="space-y-6">
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">{blog.title}</h1>
-                  
-                  <div className="flex flex-wrap items-center text-gray-400 gap-x-6 gap-y-2 text-sm">
-                    <div className="flex items-center">
-                      <User className="w-4 h-4 mr-2" />
-                      {blog.author || 'Admin'}
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {formatDate(blog.created_at)}
-                    </div>
-                    <div className="flex items-center">
-                      <Tag className="w-4 h-4 mr-2" />
-                      {blog.categories && blog.categories.length > 0 ? blog.categories[0] : 'Blog'}
-                    </div>
-                    <div>{estimateReadTime(blog.content)}</div>
-                  </div>
-                  
-                  {blog.categories && blog.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {blog.categories.map((tag: string, index: number) => (
-                        <span key={index} className="px-3 py-1 bg-gray-800 rounded-full text-xs text-gray-300">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </header>
+    <div className="flex flex-col min-h-screen bg-[#151515] text-white">
+      {/* Mobile navbar - only visible on mobile */}
+      <MobileNavbar />
+      
+      <div className="flex flex-1 pt-[60px] lg:pt-0">
+        {/* Left sidebar - hidden on mobile */}
+        <div className="hidden lg:block sticky top-0 h-screen">
+          <LeftSidebar />
+        </div>
+        
+        {/* Main content - always visible */}
+        <main className="flex-1 overflow-hidden">
+          <ScrollArea className="h-screen pb-14 lg:pb-0">
+            <div className="p-8">
+              <div className="max-w-3xl mx-auto">
+                <Link to="/blogs" className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Blogs
+                </Link>
                 
-                <div className="relative aspect-[2/1] overflow-hidden rounded-lg">
-                  <img 
-                    src={blog.image_url} 
-                    alt={blog.title} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                <div 
-className="prose prose-invert max-w-none text-gray-300 lg:text-lg"
->
-                  <ReactMarkdown>{blog.content}</ReactMarkdown>
-                </div>
-                
-                <footer className="border-t border-gray-800 pt-6 mt-10">
-                  <div className="flex flex-wrap justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-[#FFB600] flex items-center justify-center">
-                        <span className="text-[#151515] font-bold">A</span>
+                <article className="space-y-8">
+                  <header className="space-y-6">
+                    <h1 className="text-3xl md:text-4xl font-bold leading-tight">{blog.title}</h1>
+                    
+                    <div className="flex flex-wrap items-center text-gray-400 gap-x-6 gap-y-2 text-sm">
+                      <div className="flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        {blog.author || 'Admin'}
                       </div>
-                      <div>
-                        <h3 className="font-medium">{blog.author || 'Admin'}</h3>
-                        <p className="text-gray-400 text-sm">Developer and Consultant</p>
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {formatDate(blog.created_at)}
                       </div>
+                      <div className="flex items-center">
+                        <Tag className="w-4 h-4 mr-2" />
+                        {blog.categories && blog.categories.length > 0 ? blog.categories[0] : 'Blog'}
+                      </div>
+                      <div>{estimateReadTime(blog.content)}</div>
                     </div>
                     
-                    <div className="flex space-x-2 mt-4 sm:mt-0">
-                      <button className="p-2 rounded-full bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
-                        <Share2 className="w-5 h-5" />
-                      </button>
-                    </div>
+                    {blog.categories && blog.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {blog.categories.map((tag: string, index: number) => (
+                          <span key={index} className="px-3 py-1 bg-gray-800 rounded-full text-xs text-gray-300">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </header>
+                  
+                  <div className="relative aspect-[2/1] overflow-hidden rounded-lg">
+                    <img 
+                      src={blog.image_url} 
+                      alt={blog.title} 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </footer>
-              </article>
+                  
+                  <div className="prose prose-invert max-w-none text-gray-300 lg:text-lg">
+                    <ReactMarkdown>{blog.content}</ReactMarkdown>
+                  </div>
+                  
+                  <footer className="border-t border-gray-800 pt-6 mt-10">
+                    <div className="flex flex-wrap justify-between items-center">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-[#FFB600] flex items-center justify-center">
+                          <span className="text-[#151515] font-bold">A</span>
+                        </div>
+                        <div>
+                          <h3 className="font-medium">{blog.author || 'Admin'}</h3>
+                          <p className="text-gray-400 text-sm">Developer and Consultant</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-2 mt-4 sm:mt-0">
+                        <button className="p-2 rounded-full bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
+                          <Share2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </footer>
+                </article>
+              </div>
             </div>
-          </div>
-        </ScrollArea>
-      </main>
-      <div className="sticky top-0 h-screen">
-        <RightSidebar />
+          </ScrollArea>
+        </main>
+        
+        {/* Right sidebar - hidden on mobile */}
+        <div className="hidden lg:block sticky top-0 h-screen">
+          <RightSidebar />
+        </div>
       </div>
     </div>
   );
