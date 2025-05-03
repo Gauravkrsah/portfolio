@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Clock, 
@@ -17,7 +16,7 @@ import {
   Pin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import VideoPopup from './VideoPopup';
+import ContentPopup from './ContentPopup';
 
 export interface ContentCardProps {
   id: string;
@@ -52,10 +51,14 @@ const ContentCard: React.FC<ContentCardProps> = ({
   // Get platform icon based on platform name
   const getPlatformIcon = () => {
     const platformLower = platform.toLowerCase();
-    
-    if (platformLower.includes('youtube') || platformLower === 'youtube') {
+
+    if (platformLower.includes('shorts')) {
       return <Youtube className="h-3 w-3 mr-1" />;
-    } else if (platformLower.includes('instagram') || platformLower === 'instagram') {
+    } else if (platformLower.includes('youtube')) {
+      return <Youtube className="h-3 w-3 mr-1" />;
+    } else if (platformLower.includes('instagram reels')) {
+      return <Instagram className="h-3 w-3 mr-1" />;
+    } else if (platformLower.includes('instagram')) {
       return <Instagram className="h-3 w-3 mr-1" />;
     } else if (platformLower.includes('facebook') || platformLower === 'facebook') {
       return <Facebook className="h-3 w-3 mr-1" />;
@@ -78,6 +81,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log('Card clicked!', { title, platform, contentType, link });
     
     // Don't trigger if clicking on the external link button or engagement buttons
     if ((e.target as HTMLElement).closest('a') || 
@@ -85,17 +89,20 @@ const ContentCard: React.FC<ContentCardProps> = ({
       return;
     }
     
+    console.log('Setting isPopupOpen to true');
     setIsPopupOpen(true);
   };
 
   // Get content type icon
   const getContentTypeIcon = () => {
     if (contentType === 'video' || contentType === 'short') {
-      return <Video className="h-3 w-3 mr-1" />;
+      return contentType === 'short' ? 
+        <Video className="h-3 w-3 mr-1" /> : 
+        <Video className="h-3 w-3 mr-1" />;
     } else if (contentType === 'post') {
       return <Image className="h-3 w-3 mr-1" />;
     } else if (contentType === 'reel') {
-      return <Video className="h-3 w-3 mr-1" />;
+      return <Instagram className="h-3 w-3 mr-1" />;
     }
     return null;
   };
@@ -177,8 +184,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
         </div>
       </div>
       
-      {/* Video Popup */}
-      <VideoPopup
+      {/* Content Popup */}
+      <ContentPopup
         open={isPopupOpen}
         onOpenChange={setIsPopupOpen}
         title={title}

@@ -29,7 +29,7 @@ import { Loader2, Clock, Link2 } from 'lucide-react';
 import { createContent, updateContent } from '@/lib/services/supabaseService';
 import { Content } from '@/lib/services/supabaseClient';
 
-// Define the form schema
+// Define the content form schema
 const formSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
@@ -47,19 +47,19 @@ const formSchema = z.object({
   is_video: z.boolean().default(true)
 });
 
-export type VideoFormValues = z.infer<typeof formSchema>;
+export type ContentFormValues = z.infer<typeof formSchema>;
 
-interface VideoFormProps {
+interface ContentFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editVideo?: Content | null;
+  editContent?: Content | null;
 }
 
-const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
+const ContentForm = ({ open, onOpenChange, editContent }: ContentFormProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const form = useForm<VideoFormValues>({
+  const form = useForm<ContentFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
@@ -81,31 +81,31 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
   
   // Set form values when editing a video
   React.useEffect(() => {
-    if (editVideo) {
+    if (editContent) {
       form.reset({
-        title: editVideo.title,
-        description: editVideo.description,
-        content_url: editVideo.content_url,
-        thumbnail_url: editVideo.thumbnail_url,
-        platform: editVideo.platform,
-        content_type: editVideo.content_type,
+        title: editContent.title,
+        description: editContent.description,
+        content_url: editContent.content_url,
+        thumbnail_url: editContent.thumbnail_url,
+        platform: editContent.platform,
+        content_type: editContent.content_type,
         duration: '', // Duration is not stored in the database
-        likes: editVideo.likes || 0,
-        comments: editVideo.comments || 0,
-        shares: editVideo.shares || 0,
-        views: editVideo.views || 0,
-        status: editVideo.status,
-        featured: editVideo.featured || false,
-        is_video: editVideo.is_video
+        likes: editContent.likes || 0,
+        comments: editContent.comments || 0,
+        shares: editContent.shares || 0,
+        views: editContent.views || 0,
+        status: editContent.status,
+        featured: editContent.featured || false,
+        is_video: editContent.is_video
       });
     } else {
       form.reset();
     }
-  }, [editVideo, form]);
+  }, [editContent, form]);
   
-  // Create video mutation
+  // Create content mutation
   const createMutation = useMutation({
-    mutationFn: (data: VideoFormValues) => {
+    mutationFn: (data: ContentFormValues) => {
       return createContent({
         title: data.title,
         description: data.description,
@@ -124,8 +124,8 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
     },
     onSuccess: () => {
       toast({
-        title: 'Video created',
-        description: 'The video has been successfully created.',
+        title: 'Content created',
+        description: 'The content has been successfully created.',
       });
       queryClient.invalidateQueries({ queryKey: ['videos'] });
       queryClient.invalidateQueries({ queryKey: ['contents'] });
@@ -137,18 +137,18 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
     onError: (error) => {
       toast({
         title: 'Error',
-        description: `Failed to create video: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Failed to create content: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     }
   });
   
-  // Update video mutation
+  // Update content mutation
   const updateMutation = useMutation({
-    mutationFn: (data: VideoFormValues) => {
-      if (!editVideo) throw new Error("No video to update");
+    mutationFn: (data: ContentFormValues) => {
+      if (!editContent) throw new Error("No content to update");
       
-      return updateContent(editVideo.id, {
+      return updateContent(editContent.id, {
         title: data.title,
         description: data.description,
         content_url: data.content_url,
@@ -166,14 +166,14 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
     },
     onSuccess: () => {
       toast({
-        title: 'Video updated',
-        description: 'The video has been successfully updated.',
+        title: 'Content updated',
+        description: 'The content has been successfully updated.',
       });
       queryClient.invalidateQueries({ queryKey: ['videos'] });
       queryClient.invalidateQueries({ queryKey: ['contents'] });
       queryClient.invalidateQueries({ queryKey: ['featuredContents'] });
-      if (editVideo) {
-        queryClient.invalidateQueries({ queryKey: ['content', editVideo.id] });
+      if (editContent) {
+        queryClient.invalidateQueries({ queryKey: ['content', editContent.id] });
       }
       queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
       form.reset();
@@ -182,15 +182,15 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
     onError: (error) => {
       toast({
         title: 'Error',
-        description: `Failed to update video: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Failed to update content: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     }
   });
   
   // Form submission handler
-  const onSubmit = (data: VideoFormValues) => {
-    if (editVideo) {
+  const onSubmit = (data: ContentFormValues) => {
+    if (editContent) {
       updateMutation.mutate(data);
     } else {
       createMutation.mutate(data);
@@ -202,7 +202,9 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
   // Platform options
   const platformOptions = [
     "YouTube",
+    "YouTube Shorts",
     "Instagram",
+    "Instagram Reels",
     "Facebook",
     "TikTok",
     "Pinterest",
@@ -225,7 +227,7 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{editVideo ? 'Edit Video' : 'Add New Video'}</DialogTitle>
+          <DialogTitle className="text-xl font-bold">{editContent ? 'Edit Content' : 'Add New Content'}</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -331,11 +333,11 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
                     <FormControl>
                       <div className="flex relative">
                         <Link2 className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input className="pl-8" placeholder="https://example.com/video" {...field} />
+                        <Input className="pl-8" placeholder="https://youtube.com/watch?v=... or https://youtube.com/shorts/..." {...field} />
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Enter the URL to the video or post
+                      Enter the URL to the video, short, reel, or post (YouTube, YouTube Shorts, Instagram, Instagram Reels, etc.)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -486,7 +488,7 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-1">
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {editVideo ? 'Update Video' : 'Create Video'}
+                {editContent ? 'Update Content' : 'Create Content'}
               </Button>
             </DialogFooter>
           </form>
@@ -496,4 +498,4 @@ const VideoForm = ({ open, onOpenChange, editVideo }: VideoFormProps) => {
   );
 };
 
-export default VideoForm;
+export default ContentForm;

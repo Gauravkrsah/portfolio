@@ -483,11 +483,11 @@ A brief overview of the project.
                       <FormControl>
                         <div className="flex relative">
                           <Video className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input className="pl-8" placeholder="https://youtube.com/watch?v=..." {...field} />
+                          <Input className="pl-8" placeholder="https://youtube.com/watch?v=... or https://youtube.com/shorts/..." {...field} />
                         </div>
                       </FormControl>
                       <FormDescription>
-                        Add a video URL from YouTube, Vimeo, etc.
+                        Add a video URL from YouTube, YouTube Shorts, Instagram, Instagram Reels, Vimeo, etc.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -512,7 +512,10 @@ A brief overview of the project.
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="YouTube">YouTube</SelectItem>
+                          <SelectItem value="YouTube Shorts">YouTube Shorts</SelectItem>
                           <SelectItem value="Vimeo">Vimeo</SelectItem>
+                          <SelectItem value="Instagram">Instagram</SelectItem>
+                          <SelectItem value="Instagram Reels">Instagram Reels</SelectItem>
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>

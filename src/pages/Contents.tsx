@@ -14,11 +14,17 @@ import { Content } from '@/lib/services/supabaseClient';
 
 const categories = [
   "All",
-  "Videos",
-  "Articles",
-  "Podcasts",
-  "Tutorials",
-  "Courses"
+  "YouTube",
+  "YouTube Shorts",
+  "Instagram",
+  "Instagram Reels",
+  "Facebook",
+  "TikTok",
+  "Pinterest",
+  "Twitter",
+  "LinkedIn",
+  "Vimeo",
+  "Other"
 ];
 
 const Contents: React.FC = () => {
@@ -42,16 +48,18 @@ const Contents: React.FC = () => {
     
     return contentItems.filter(content => {
       // Determine content category
-      const contentCategory = content.content_type || "Other";
+      const platform = content.platform || "Other";
       
-      // Check if content is a video if "Videos" category is selected
-      const isVideoMatch = activeCategory === "Videos" ? content.is_video : true;
+      // Special case for YouTube Shorts
+      const isYouTubeShorts = platform.toLowerCase().includes('youtube') && content.content_type?.toLowerCase() === 'short';
+      const isInstagramReels = platform.toLowerCase().includes('instagram') && content.content_type?.toLowerCase() === 'reel';
       
       // Match category
       const matchesCategory = 
         activeCategory === "All" || 
-        contentCategory.includes(activeCategory) ||
-        isVideoMatch;
+        (activeCategory === "YouTube Shorts" && isYouTubeShorts) ||
+        (activeCategory === "Instagram Reels" && isInstagramReels) ||
+        (platform.toLowerCase().includes(activeCategory.toLowerCase()) && !((activeCategory === "YouTube" && isYouTubeShorts) || (activeCategory === "Instagram" && isInstagramReels)));
       
       // Match search query
       const matchesSearch = searchQuery === "" || 

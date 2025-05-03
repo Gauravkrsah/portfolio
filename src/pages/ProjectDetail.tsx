@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getProjectById } from '@/lib/services/supabaseService';
 import { Project } from '@/lib/services/supabaseClient';
 import ReactMarkdown from 'react-markdown';
-import VideoPopup from '@/components/ui/VideoPopup';
+import ContentPopup from '@/components/ui/ContentPopup';
 
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -241,15 +241,16 @@ const ProjectDetail: React.FC = () => {
       
       {/* Video Popup */}
       {project.video_url && (
-        <VideoPopup
+        <ContentPopup
           open={isVideoPopupOpen}
           onOpenChange={setIsVideoPopupOpen}
           title={project.title}
           url={project.video_url}
           platform={project.video_platform || 'YouTube'}
+          contentType="video"
         />
-      )}    </div>
-
+      )}
+    </div>
   );
 };
 

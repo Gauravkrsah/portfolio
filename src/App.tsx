@@ -53,7 +53,7 @@ const App: React.FC = () => {
   const [isMessageOpen, setIsMessageOpen] = React.useState(false);
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = React.useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
@@ -61,7 +61,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        console.log("Starting application initialization...");
         
         // First try to disable RLS to ensure we have full access
         const rlsDisabled = await disableRLS();
@@ -77,7 +76,6 @@ const App: React.FC = () => {
           setInitError("Failed to initialize application. Check console for details.");
           setIsInitialized(false);
         } else {
-          console.log("Application initialized successfully");
           setIsInitialized(true);
         }
       } catch (error) {
@@ -107,27 +105,7 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Show loading or error state
-  if (!isInitialized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        <div className="text-center p-8 max-w-md">
-          {initError ? (
-            <>
-              <h1 className="text-2xl font-bold text-red-500 mb-4">Application Error</h1>
-              <p className="mb-4">{initError}</p>
-              <p className="text-sm text-gray-400">Please check your database connection and environment variables.</p>
-            </>
-          ) : (
-            <>
-              <h1 className="text-2xl font-bold mb-4">Loading Application...</h1>
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto"></div>
-            </>
-          )}
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <QueryClientProvider client={queryClient}>

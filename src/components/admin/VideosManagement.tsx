@@ -32,40 +32,40 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Loader2, MoreVertical, Plus, Star, Edit, Trash, Eye, ExternalLink } from 'lucide-react';
 import { Content } from '@/lib/services/supabaseClient';
-import VideoForm from './VideoForm';
+import ContentForm from './VideoForm';
 
-const VideosManagement = () => {
+const ContentManagement = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [videoToDelete, setVideoToDelete] = useState<string | null>(null);
+  const [contentToDelete, setContentToDelete] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editVideo, setEditVideo] = useState<Content | null>(null);
+  const [editContent, setEditContent] = useState<Content | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Fetch videos
-  const { data: videos, isLoading, error } = useQuery({
+  // Fetch content
+  const { data: contents, isLoading, error } = useQuery({
     queryKey: ['videos'],
     queryFn: getVideos
   });
  
-  // Delete video mutation
+  // Delete content mutation
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteContent(id),
     onSuccess: () => {
       toast({
-        title: 'Video deleted',
-        description: 'The video has been successfully deleted.',
+        title: 'Content deleted',
+        description: 'The content has been successfully deleted.',
       });
       queryClient.invalidateQueries({ queryKey: ['videos'] });
       queryClient.invalidateQueries({ queryKey: ['contents'] });
       queryClient.invalidateQueries({ queryKey: ['featuredContents'] });
       setIsDeleteDialogOpen(false);
-      setVideoToDelete(null);
+      setContentToDelete(null);
     },
     onError: (error) => {
       toast({
         title: 'Error',
-        description: `Failed to delete video: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Failed to delete content: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     }
@@ -78,7 +78,7 @@ const VideosManagement = () => {
     },
     onSuccess: () => {
       toast({
-        title: 'Video updated',
+        title: 'Content updated',
         description: 'Featured status has been updated successfully.',
       });
       queryClient.invalidateQueries({ queryKey: ['videos'] });
@@ -94,36 +94,36 @@ const VideosManagement = () => {
     }
   });
 
-  const handleAddVideo = () => {
-    setEditVideo(null);
+  const handleAddContent = () => {
+    setEditContent(null);
     setIsFormOpen(true);
   };
   
-  const handleEditVideo = (video: Content) => {
-    setEditVideo(video);
+  const handleEditContent = (content: Content) => {
+    setEditContent(content);
     setIsFormOpen(true);
   };
   
   const handleFormClose = () => {
     setIsFormOpen(false);
-    setEditVideo(null);
+    setEditContent(null);
   };
   
-  const handleDeleteVideo = (id: string) => {
-    setVideoToDelete(id);
+  const handleDeleteContent = (id: string) => {
+    setContentToDelete(id);
     setIsDeleteDialogOpen(true);
   };
   
   const confirmDelete = () => {
-    if (videoToDelete) {
-      deleteMutation.mutate(videoToDelete);
+    if (contentToDelete) {
+      deleteMutation.mutate(contentToDelete);
     }
   };
 
-  const handleToggleFeatured = (video: Content) => {
+  const handleToggleFeatured = (content: Content) => {
     toggleFeaturedMutation.mutate({
-      id: video.id,
-      featured: !video.featured
+      id: content.id,
+      featured: !content.featured
     });
   };
 
@@ -139,16 +139,16 @@ const VideosManagement = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Videos Management</h2>
-        <Button onClick={handleAddVideo} className="gap-1">
+        <h2 className="text-2xl font-bold">Content Management</h2>
+        <Button onClick={handleAddContent} className="gap-1">
           <Plus className="h-4 w-4" />
-          Add New Video
+          Add New Content
         </Button>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle>All Videos</CardTitle>
+          <CardTitle>All Content</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -157,14 +157,15 @@ const VideosManagement = () => {
             </div>
           ) : error ? (
             <div className="text-center py-8 text-red-500">
-              Error loading videos. Please try again.
+              Error loading content. Please try again.
             </div>
-          ) : videos && videos.length > 0 ? (
+          ) : contents && contents.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead>Platform</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Views</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Featured</TableHead>
@@ -172,24 +173,25 @@ const VideosManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {videos.map((video) => (
-                  <TableRow key={video.id}>
-                    <TableCell className="font-medium">{video.title}</TableCell>
-                    <TableCell>{video.platform || 'YouTube'}</TableCell>
-                    <TableCell>{formatViews(video.views || 0)}</TableCell>
+                {contents.map((content) => (
+                  <TableRow key={content.id}>
+                    <TableCell className="font-medium">{content.title}</TableCell>
+                    <TableCell>{content.platform || 'YouTube'}</TableCell>
+                    <TableCell>{content.content_type || 'video'}</TableCell>
+                    <TableCell>{formatViews(content.views || 0)}</TableCell>
                     <TableCell>
-                      <Badge variant={video.status === 'Published' ? 'default' : 'secondary'}>
-                        {video.status}
+                      <Badge variant={content.status === 'Published' ? 'default' : 'secondary'}>
+                        {content.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        onClick={() => handleToggleFeatured(video)}
-                        title={video.featured ? "Remove from featured" : "Add to featured"}
+                        onClick={() => handleToggleFeatured(content)}
+                        title={content.featured ? "Remove from featured" : "Add to featured"}
                       >
-                        {video.featured ? (
+                        {content.featured ? (
                           <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                         ) : (
                           <Star className="h-4 w-4 text-gray-300" />
@@ -204,15 +206,15 @@ const VideosManagement = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => window.open(video.content_url || '#', '_blank')}>
+                          <DropdownMenuItem onClick={() => window.open(content.content_url || '#', '_blank')}>
                             <Eye className="h-4 w-4 mr-2" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleEditVideo(video)}>
+                          <DropdownMenuItem onClick={() => handleEditContent(content)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeleteVideo(video.id)}>
+                          <DropdownMenuItem onClick={() => handleDeleteContent(content.id)}>
                             <Trash className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
@@ -225,7 +227,7 @@ const VideosManagement = () => {
             </Table>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              No videos found. Click "Add New Video" to create one.
+              No content found. Click "Add New Content" to create one.
             </div>
           )}
         </CardContent>
@@ -237,7 +239,7 @@ const VideosManagement = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the video.
+              This action cannot be undone. This will permanently delete the content.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -259,14 +261,14 @@ const VideosManagement = () => {
         </AlertDialogContent>
       </AlertDialog>
       
-      {/* Video Form Dialog */}
-      <VideoForm 
+      {/* Content Form Dialog */}
+      <ContentForm 
         open={isFormOpen} 
         onOpenChange={handleFormClose} 
-        editVideo={editVideo} 
+        editContent={editContent}
       />
     </div>
   );
 };
 
-export default VideosManagement;
+export default ContentManagement;

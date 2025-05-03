@@ -55,7 +55,7 @@ const HeroSection: React.FC = () => {
                 className="text-2xl md:text-3xl font-bold"
               >
                 <div className="bg-clip-text text-transparent bg-gradient-to-r from-[#FFB600] via-[#e2eeff] to-[#FFB600]/70">
-                  Full Stack Developer & Designer
+                  Designer, Developer and Marketer 
                 </div>
               </motion.div>
             </div>

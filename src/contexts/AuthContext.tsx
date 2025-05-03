@@ -23,49 +23,85 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
+  // Helper function to create a persistent session
+  const createPersistentSession = () => {
+    // Create a mock session with very long expiration
+    const mockSession = {
+      access_token: 'mock-token',
+      refresh_token: 'mock-refresh-token',
+      expires_at: Date.now() + 10 * 365 * 24 * 3600 * 1000, // 10 years from now
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: {
+        id: 'mock-user-id',
+        email: 'admin@example.com',
+        role: 'authenticated',
+        aud: 'authenticated',
+        app_metadata: {},
+        user_metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    } as Session;
+    
+    setSession(mockSession);
+    setIsAuthenticated(true);
+    
+    // Store session in localStorage
+    localStorage.setItem('portfolio_session', JSON.stringify(mockSession));
+    localStorage.setItem('portfolio_auth', 'true');
+  };
+
   // Check if there's an existing Supabase session on component mount
   useEffect(() => {
     // First check if we have a stored session in localStorage
     const storedSession = localStorage.getItem('portfolio_session');
-    const storedAuth = localStorage.getItem('portfolio_auth');
+    const storedAuth = localStorage.getItem('portfolio_auth') === 'true';
     
-    if (storedSession && storedAuth === 'true') {
+    if (storedSession && storedAuth) {
       try {
         const parsedSession = JSON.parse(storedSession);
-        setSession(parsedSession);
-        setIsAuthenticated(true);
+        
+        // Check if the session has expired
+        if (parsedSession.expires_at && parsedSession.expires_at > Date.now()) {
+          console.log('Restoring session from localStorage');
+          setSession(parsedSession);
+          setIsAuthenticated(true);
+        } else {
+          console.log('Stored session has expired, creating a new persistent session');
+          // Create a new persistent session
+          createPersistentSession();
+        }
       } catch (error) {
         console.error('Error parsing stored session:', error);
-        // Clear invalid session data
-        localStorage.removeItem('portfolio_session');
-        localStorage.removeItem('portfolio_auth');
+        // Don't clear session data, just create a new one if auth is true
+        if (storedAuth) {
+          createPersistentSession();
+        }
       }
     } else {
       // If no stored session, check Supabase
       supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-        setIsAuthenticated(!!session);
+        if (session) {
+          setSession(session);
+          setIsAuthenticated(true);
+          // Store in localStorage
+          localStorage.setItem('portfolio_session', JSON.stringify(session));
+          localStorage.setItem('portfolio_auth', 'true');
+        }
       });
-
     }
     
-    setIsLoading(false);
-   // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setIsAuthenticated(!!session);
-      
       if (session) {
-        // Store session in localStorage when authenticated
+        setSession(session);
+        setIsAuthenticated(true);
         localStorage.setItem('portfolio_session', JSON.stringify(session));
         localStorage.setItem('portfolio_auth', 'true');
-      } else {
-        // Remove session from localStorage when logged out
-        localStorage.removeItem('portfolio_session');
-        localStorage.removeItem('portfolio_auth');
-      }
+      } 
+      // Only clear session on explicit logout, not on auth state change
     });
 
     return () => subscription.unsubscribe();
@@ -78,34 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
       
-      // For demo purposes, we'll just set isAuthenticated to true
-      // This bypasses Supabase auth for now, but still allows the admin to log in
-      setIsAuthenticated(true);
-      localStorage.setItem('portfolio_auth', 'true');
-      
-      // Create a mock session
-      const mockSession = {
-        access_token: 'mock-token',
-        refresh_token: 'mock-refresh-token',
-        expires_at: Date.now() + 3600 * 1000, // 1 hour from now
-        expires_in: 3600,
-        token_type: 'bearer',
-        user: {
-          id: 'mock-user-id',
-          email: 'admin@example.com',
-          role: 'authenticated',
-          aud: 'authenticated',
-          app_metadata: {},
-          user_metadata: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      } as Session;
-      
-      setSession(mockSession);
-      
-      // Store session in localStorage
-      localStorage.setItem('portfolio_session', JSON.stringify(mockSession));
+      // Create a persistent session
+      createPersistentSession();
       return true;
     } catch (error) {
       console.error('Error during login:', error);

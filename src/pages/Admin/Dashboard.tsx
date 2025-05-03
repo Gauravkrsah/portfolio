@@ -85,7 +85,7 @@ const AdminDashboard: React.FC = () => {
                 value="videos"
                 className="justify-start px-4 py-2 data-[state=active]:bg-muted w-full rounded-none border-l-2 border-transparent data-[state=active]:border-primary"
               >
-                Videos
+                Contents
               </TabsTrigger>
               <TabsTrigger
                 value="other-works"
