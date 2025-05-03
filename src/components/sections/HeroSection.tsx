@@ -22,9 +22,9 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center bg-[#151515] overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center justify-center bg-[#151515] overflow-hidden pt-14 lg:pt-0">
       {/* Background effect with reduced opacity */}
-      <BackgroundBeams className="opacity-60" />
+      <BackgroundBeams className="opacity-80 z-0" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
         <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -40,7 +40,7 @@ const HeroSection: React.FC = () => {
             <div className="space-y-4">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white"
               >
@@ -50,7 +50,7 @@ const HeroSection: React.FC = () => {
               {/* Role text with gradient */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-2xl md:text-3xl font-bold"
               >
@@ -63,7 +63,7 @@ const HeroSection: React.FC = () => {
             {/* Description */}
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-neutral-300 max-w-lg text-sm sm:text-base"
             >
@@ -75,7 +75,7 @@ const HeroSection: React.FC = () => {
             {/* Call to action buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-wrap gap-3 sm:gap-5 mt-6 sm:mt-8"
             >
@@ -100,8 +100,8 @@ const HeroSection: React.FC = () => {
           
           {/* Right side - Video card */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="w-full lg:w-1/2 relative z-20"
           >
