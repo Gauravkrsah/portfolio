@@ -1,58 +1,49 @@
-# Portfolio
+# Project Overview
 
-A modern, responsive portfolio website built with React and TypeScript.
+This repository contains a full-stack application with clean separation of frontend and backend components for ease of understanding, development, and deployment.
 
-## Features
+## Folder Structure
 
-- Responsive design that works on all devices
-- Project showcase with detailed project pages
-- Blog section for sharing thoughts and experiences
-- Admin dashboard for content management
-- Contact form for easy communication
+### frontend/
+The frontend React application built using TypeScript, Vite, and Tailwind CSS.
 
-## Tech Stack
+- `public/`: Static assets like images, favicon, and robots.txt.
+- `src/`: Source code with the following subfolders:
+  - `assets/`: Images, fonts, icons, and other static resources.
+  - `components/`: Reusable React UI components.
+  - `hooks/`: Custom React hooks.
+  - `pages/`: Page components representing routes.
+  - `styles/`: Global and modular stylesheet files.
+  - `utils/`: Utility functions and helpers.
+- Configuration files like `package.json`, `tsconfig.json`, `vite.config.ts`, etc.
 
-- React
-- TypeScript
-- Tailwind CSS
-- Shadcn/UI Components
-- Supabase for backend
+### backend-api/
+The backend API built using Node.js, Express, and TypeScript.
 
-## Getting Started
+- `src/`: Backend source code with the following subfolders:
+  - `controllers/`: API endpoint controllers handling request logic.
+  - `middlewares/`: Express middleware functions.
+  - `models/`: Data models and database schema definitions.
+  - `routes/`: API routes definitions.
+  - `services/`: Business logic and external service integrations.
+  - `utils/`: Utility functions and helpers.
+- `config/`: Configuration files and environment setup.
+- Root configuration files like `package.json`, `tsconfig.json`.
 
-### Prerequisites
+## Running the Application
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Frontend:
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
 
-### Installation
+- Backend:
+  ```bash
+  cd backend-api
+  npm install
+  npm run dev
+  ```
 
-1. Clone the repository
-   ```
-   git clone https://github.com/Gauravkrsah/portfolio.git
-   cd portfolio
-   ```
-
-2. Install dependencies
-   ```
-   npm install
-   ```
-
-3. Start the development server
-   ```
-   npm run dev
-   ```
-
-4. Open your browser and visit `http://localhost:5173`
-
-## Project Structure
-
-- `/src/components` - Reusable UI components
-- `/src/pages` - Page components
-- `/src/lib` - Utility functions and services
-- `/src/contexts` - React context providers
-- `/public` - Static assets
-
-## License
-
-MIT
+This structure ensures maintainability, scalability, and professional organization for your project.
