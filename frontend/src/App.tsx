@@ -162,10 +162,12 @@ const App: React.FC = () => {
             <MessagePopup 
               open={isMessageOpen} 
               onOpenChange={setIsMessageOpen} 
-            />
-            <ChatPopup 
+            />            <ChatPopup 
               open={isChatOpen} 
               onOpenChange={setIsChatOpen} 
+              onOpenMeetingPopup={() => setIsScheduleOpen(true)} 
+              onOpenSubscribePopup={() => setIsSubscribeOpen(true)} 
+              onOpenMessagePopup={() => setIsMessageOpen(true)}
             />
             <SchedulePopup open={isScheduleOpen} onOpenChange={setIsScheduleOpen} />
           </AuthProvider>

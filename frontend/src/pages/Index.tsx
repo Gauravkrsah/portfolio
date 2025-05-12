@@ -7,7 +7,7 @@ import { ThemeProvider } from '@/hooks/use-theme';
 
 const Index: React.FC = () => {
   useEffect(() => {
-    document.title = "Portfolio | Full Stack Developer & AI Enthusiast";
+    document.title = "GauravKrSah | Design Develope Market";
   }, []);
 
   return (
