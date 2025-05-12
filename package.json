@@ -2,6 +2,10 @@
   "devDependencies": {
     "@types/node": "^22.15.17",
     "@vitejs/plugin-react-swc": "^3.9.0",
-    "lovable-tagger": "^1.1.8"
+    "lovable-tagger": "^1.1.8",
+    "concurrently": "^8.2.0"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend-api\" \"npm run dev --prefix frontend\""
   }
 }

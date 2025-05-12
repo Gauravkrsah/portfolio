@@ -1,16 +1,31 @@
-# Backend API
+# Backend API Setup
 
-This folder contains the backend API server.
+## Gemini Integration Quick Guide
 
-## Structure
+1. **Get your Gemini API key:**  
+   [Google AI Studio - API Keys](https://makersuite.google.com/app/apikey)
 
-- `src/` - Source code for API routes, controllers, models, and services.
-- Configuration files like `package.json` and `tsconfig.json` provide setup and build configuration.
+2. **Edit your backend `.env` file:**  
+   ```
+   GEMINI_API_KEY=YOUR_ACTUAL_GEMINI_API_KEY_HERE
+   ```
+   - Make sure there are NO quotes, NO spaces before/after `=`.
+   - This line must be present (case matters).
 
-## Getting Started
+3. **Restart your backend server:**  
+   Open a terminal in the `backend-api` directory and run:
+   ```
+   npm run dev
+   ```
+   or
+   ```
+   npm start
+   ```
+   - Watch for the debug line:
+     ```
+     [DEBUG] GEMINI_API_KEY present: true string
+     ```
+   - If it's `false` or `undefined`, your .env variable is not correct!
 
-- `npm install` to install dependencies.
-- `npm run dev` to start the development server.
-- `npm run build` to build the project for production.
-
-The backend API is implemented using Node.js with TypeScript.
+4. **Test your chatbot:**  
+   If set up correctly, messages will use Gemini and respond with smart, context-aware answers.

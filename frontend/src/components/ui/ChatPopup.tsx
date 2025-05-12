@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Send, X, Bot, User, Trash2 } from 'lucide-react';
+import { Send, X, Bot, User, Trash2, Calendar, MessageCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { fetchGeminiResponse } from '@/lib/geminiClient';
+import SchedulePopup from '@/components/ui/SchedulePopup';
+import MessagePopup from '@/components/ui/MessagePopup';
 
 interface ChatPopupProps {
   open: boolean;
@@ -29,8 +32,10 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showSchedulePopup, setShowSchedulePopup] = useState(false);
+  const [showMessagePopup, setShowMessagePopup] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const clearConversation = () => {
     setMessages(initialMessages);
   };
@@ -45,48 +50,50 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
     }
   }, [messages, open]);
 
-  const handleSendMessage = (e?: React.FormEvent) => {
+  function detectActions(text: string): { schedule: boolean, message: boolean } {
+    const scheduleRegex = /\b(schedule|meeting|meet|book a meeting|appointment)\b/i;
+    const messageRegex = /\b(message|contact|send.*message|reach out)\b/i;
+    return {
+      schedule: !!text.match(scheduleRegex),
+      message: !!text.match(messageRegex),
+    };
+  }
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
     if (!inputValue.trim()) return;
-    
-    // Add user message
     const userMessage: Message = {
       id: messages.length + 1,
       text: inputValue,
       sender: 'user',
       timestamp: new Date()
     };
-    
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
-    
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponses = [
-        "Thanks for your message! Gaurav will get back to you soon.",
-        "I'll make sure Gaurav sees this.",
-        "Great question! Let me find the best answer for you.",
-        "I've noted your message and will pass it along to Gaurav.",
-        "Thanks for reaching out! Is there anything else you'd like to know?",
-        "Let me check my knowledge base for that information.",
-        "That's an interesting question! Let me help you with that.",
-        "I'm here to assist with any questions about Gaurav's work.",
-      ];
-      
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      
+    try {
+      const { text: geminiText } = await fetchGeminiResponse(userMessage.text);
+      const reply = geminiText.trim() || 'Sorry, I could not generate a response right now.';
       const botMessage: Message = {
-        id: messages.length + 2,
-        text: randomResponse,
+        id: userMessage.id + 1,
+        text: reply,
         sender: 'bot',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
       setMessages(prev => [...prev, botMessage]);
+    } catch (err) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: userMessage.id + 1,
+          text: 'Sorry, I could not connect to Gemini. Please try again later.',
+          sender: 'bot',
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const formatTime = (date: Date) => {
@@ -127,47 +134,76 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
         </div>
         
         <div className="flex-1 overflow-y-auto p-2 space-y-2 bg-gradient-to-b from-neutral-950 to-neutral-900">
-          {messages.map((message) => (
-            <div 
-              key={message.id} 
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
-            >
-              <div className="flex gap-1.5 max-w-[85%]">
-                {message.sender === 'bot' && (
-                  <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
-                    <Bot className="h-3.5 w-3.5 text-[#151515]" />
+          {messages.map((message, idx) => {
+            const isBot = message.sender === 'bot';
+            const isLast = idx === messages.length - 1 && isBot;
+            const actions: { schedule: boolean; message: boolean } = isBot
+              ? detectActions(message.text)
+              : { schedule: false, message: false };
+            return (
+              <div 
+                key={message.id}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+              >
+                <div className="flex gap-1.5 max-w-[85%]">
+                  {isBot && (
+                    <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
+                      <Bot className="h-3.5 w-3.5 text-[#151515]" />
+                    </div>
+                  )}
+                  <div
+                    className={`p-2.5 rounded-xl ${
+                      message.sender === 'user'
+                        ? 'bg-gradient-to-r from-[#FFB600] to-[#e2eeff] text-[#151515] font-medium rounded-tr-none'
+                        : 'bg-gradient-to-r from-neutral-800 to-neutral-700 text-white rounded-tl-none'
+                    }`}
+                  >
+                    <p className="text-xs whitespace-pre-line">{message.text}</p>
+                    <p className={`text-[10px] mt-1 ${message.sender === 'user' ? 'text-[#151515]/70' : 'text-neutral-400'}`}>
+                      {formatTime(message.timestamp)}
+                    </p>
+                    {isLast && (actions.schedule || actions.message) && (
+                      <div className="flex gap-2 mt-2">
+                        {actions.schedule && (
+                          <Button
+                            size="sm"
+                            className="px-2 py-1 h-7 rounded-lg bg-gradient-to-r from-[#FFB600] to-[#e2eeff] text-[#151515] font-semibold transition-colors text-xs flex items-center gap-1"
+                            onClick={() => setShowSchedulePopup(true)}
+                            type="button"
+                          >
+                            <Calendar className="h-3.5 w-3.5" />
+                            Schedule Meeting
+                          </Button>
+                        )}
+                        {actions.message && (
+                          <Button
+                            size="sm"
+                            className="px-2 py-1 h-7 rounded-lg bg-gradient-to-r from-[#FFB600] to-[#e2eeff] text-[#151515] font-semibold transition-colors text-xs flex items-center gap-1"
+                            onClick={() => setShowMessagePopup(true)}
+                            type="button"
+                          >
+                            <MessageCircle className="h-3.5 w-3.5" />
+                            Send a Message
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <div 
-                  className={`p-2.5 rounded-xl ${
-                    message.sender === 'user' 
-                      ? 'bg-gradient-to-r from-[#FFB600] to-[#e2eeff] text-[#151515] font-medium rounded-tr-none' 
-                      : 'bg-gradient-to-r from-neutral-800 to-neutral-700 text-white rounded-tl-none'
-                  }`}
-                >
-                  <p className="text-xs">{message.text}</p>
-                  <p className={`text-[10px] mt-1 ${message.sender === 'user' ? 'text-[#151515]/70' : 'text-neutral-400'}`}>
-                    {formatTime(message.timestamp)}
-                  </p>
+                  {message.sender === 'user' && (
+                    <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
+                      <User className="h-3.5 w-3.5 text-[#151515]" />
+                    </div>
+                  )}
                 </div>
-                
-                {message.sender === 'user' && (
-                  <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
-                    <User className="h-3.5 w-3.5 text-[#151515]" />
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
-          
+            );
+          })}
           {isTyping && (
             <div className="flex justify-start animate-fade-in">
               <div className="flex gap-1.5">
                 <div className="flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-[#FFB600] to-[#e2eeff] flex items-center justify-center self-end">
                   <Bot className="h-3.5 w-3.5 text-[#151515]" />
                 </div>
-                
                 <div className="bg-gradient-to-r from-neutral-800 to-neutral-700 text-white p-2.5 rounded-xl rounded-tl-none">
                   <div className="flex space-x-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -178,8 +214,10 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ open, onOpenChange }) => {
               </div>
             </div>
           )}
-          
           <div ref={messagesEndRef} />
+          {/* Schedule Meeting and Message Popups */}
+          <SchedulePopup open={showSchedulePopup} onOpenChange={setShowSchedulePopup} />
+          <MessagePopup open={showMessagePopup} onOpenChange={setShowMessagePopup} />
         </div>
         
         <form onSubmit={handleSendMessage} className="border-t border-neutral-800 p-2 bg-neutral-900/50">
