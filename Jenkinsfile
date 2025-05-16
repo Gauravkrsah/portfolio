@@ -5,9 +5,8 @@ pipeline {
         // Define environment variables
         DOCKER_REGISTRY = credentials('docker-registry-url')
         DOCKER_CREDS = credentials('docker-credentials-id')
-        // GitHub token stored as a Jenkins credential
-        GITHUB_TOKEN = credentials('github-token')
         // These credentials will need to be set up in Jenkins
+        GITHUB_TOKEN = credentials('github-token')
         GEMINI_API_KEY = credentials('gemini-api-key')
         SUPABASE_URL = credentials('supabase-url')
         SUPABASE_ANON_KEY = credentials('supabase-anon-key')
@@ -17,8 +16,15 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Check out from version control
-                checkout scm
+                // Check out from version control with credentials
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Gauravkrsah/portfolio.git',
+                        credentialsId: 'github-token'
+                    ]]
+                ])
             }
         }
 

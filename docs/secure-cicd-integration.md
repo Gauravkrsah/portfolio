@@ -1,113 +1,75 @@
 # Secure CI/CD Integration Guide
 
-This document provides guidance for securely connecting your GitHub repository with Jenkins and Docker for CI/CD deployment.
+## Handling GitHub Tokens and Other Secrets
 
-## Security Best Practices
+This guide explains how to securely manage tokens and credentials in your CI/CD pipeline using Jenkins and Docker.
 
-### GitHub Token Management
+## GitHub Token Security
 
-1. **Create a GitHub Personal Access Token (PAT)**:
-   - Go to GitHub → Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens
-   - Create a new token with the minimum required permissions:
-     - `repo` access for private repositories
-     - `read:packages` and `write:packages` if using GitHub Packages
-   - Set an appropriate expiration date (e.g., 90 days)
+### Creating a Secure GitHub Token
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+2. Create a token with the minimum necessary permissions:
+   - Read access to metadata
+   - Read and write access to code
+   - Read access to pull requests
 
-2. **Store the token securely in Jenkins**:
-   - In Jenkins, navigate to Dashboard → Manage Jenkins → Manage Credentials
-   - Add a new credential of type "Secret text"
-   - Enter your GitHub token in the "Secret" field
-   - Set the ID to something descriptive like `github-token`
-   - Add a description for future reference
+### Adding the Token to Jenkins
+1. In Jenkins, go to Dashboard → Manage Jenkins → Credentials → System → Global credentials → Add credentials
+2. Select "Secret text" as the kind
+3. Enter the GitHub token as the secret
+4. Set the ID to "github-token" (this is what's referenced in the Jenkinsfile)
+5. Provide a description like "GitHub access token for portfolio project"
 
-3. **Never**:
-   - Store tokens in code or configuration files
-   - Share tokens in chat, email, or other communication channels
-   - Commit tokens to version control
-   - Use tokens with more permissions than necessary
+## Other Sensitive Credentials
 
-### Docker Integration
+Add these additional credentials to Jenkins:
 
-1. **Docker Hub Credentials**:
-   - Create dedicated Docker Hub access tokens rather than using your password
-   - Store Docker Hub credentials in Jenkins using the same credential system
+1. **Docker Registry**:
+   - ID: docker-registry-url
+   - Type: Secret text
+   - Secret: Your Docker registry URL
 
-2. **Docker Image Security**:
-   - Use specific image tags instead of `latest`
-   - Implement image scanning for vulnerabilities
-   - Sign your Docker images for authenticity verification
+2. **Docker Credentials**:
+   - ID: docker-credentials-id
+   - Type: Username with password
+   - Username: Your Docker username
+   - Password: Your Docker password
 
-### Jenkins Pipeline Configuration
+3. **API Keys**:
+   - ID: gemini-api-key
+   - Type: Secret text
+   - Secret: Your Gemini API key
 
-1. **Secure Pipeline Variables**:
-   - Use credentials binding for all sensitive values
-   - Mask sensitive output in build logs
-   - Don't expose secrets in shell scripts or commands
+   Repeat for Supabase credentials with appropriate IDs.
 
-2. **Jenkins Security**:
-   - Keep Jenkins updated to the latest version
-   - Use role-based access control
-   - Enable build authorization
-   - Run builds in isolated environments
+## Usage in CI/CD Pipeline
 
-## Setting Up the Integration
+The Jenkins pipeline uses these credentials securely:
 
-### 1. Configure GitHub Webhook
+```groovy
+environment {
+    GITHUB_TOKEN = credentials('github-token')
+    DOCKER_REGISTRY = credentials('docker-registry-url')
+    DOCKER_CREDS = credentials('docker-credentials-id')
+}
+```
 
-1. In your GitHub repository:
-   - Go to Settings → Webhooks → Add webhook
-   - Set the payload URL to `https://your-jenkins-server/github-webhook/`
-   - Select content type: `application/json`
-   - Choose which events should trigger the webhook (typically push events)
-   - Ensure the webhook is active
+## Docker Compose with Secrets
 
-### 2. Configure Jenkins
+For local development with Docker, use a .env file (which is gitignored):
 
-1. Install required plugins:
-   - GitHub Integration
-   - Docker Pipeline
-   - Credentials Binding
+```
+# Create a .env file for local development (DO NOT COMMIT THIS FILE)
+GITHUB_TOKEN=your_token_here
+GEMINI_API_KEY=your_key_here
+```
 
-2. Create a new Pipeline job:
-   - Select "Pipeline script from SCM"
-   - Choose Git as SCM
-   - Enter your repository URL
-   - Select the GitHub credential you created earlier
-   - Specify the branch to build (e.g., `*/main`)
-   - Path to Jenkinsfile: `Jenkinsfile`
-   - Under "Build Triggers", check "GitHub hook trigger for GITScm polling"
+## IMPORTANT: Security Best Practices
 
-### 3. Configure Docker Registry
+1. **Never commit tokens to your repository**
+2. **Never share tokens in plain text** in emails, chat, or documentation
+3. **Regularly rotate tokens** (every 30-90 days)
+4. **Use the minimum permissions necessary** for each token
+5. **Revoke tokens** that may have been compromised
 
-1. In your Jenkins Pipeline:
-   - Use the Docker registry credential to authenticate
-   - Push images with unique tags (e.g., BUILD_NUMBER)
-   - Configure Docker to use secure connections
-
-## Testing the Integration
-
-After setup, perform these validation steps:
-
-1. Make a small change to your repository and commit it
-2. Verify Jenkins automatically triggers a build
-3. Check that Docker images are built and pushed securely
-4. Confirm deployment completes successfully
-5. Review logs to ensure no secrets were exposed
-
-## Rotating Credentials
-
-Implement a credential rotation policy:
-
-1. GitHub tokens: Rotate every 90 days
-2. Docker credentials: Rotate every 90 days
-3. API keys: Rotate according to service provider recommendations
-4. After rotation, update all credentials in Jenkins
-
-## Troubleshooting
-
-If you encounter issues with the integration:
-- Verify webhook is properly configured and active
-- Check Jenkins credentials are correctly set up
-- Ensure Jenkins has proper permissions
-- Review build logs for specific error messages
-- Test connections manually to isolate the issue
+Remember: Security is a continuous process. Regularly audit your security practices and update them as needed.

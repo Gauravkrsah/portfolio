@@ -8,13 +8,12 @@ services:
     container_name: portfolio-backend
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - PORT=4000
-      # These will need to be set when running in production
-      # - GEMINI_API_KEY=${GEMINI_API_KEY}
-      # - SUPABASE_URL=${SUPABASE_URL}
-      # - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      # - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${PORT:-4000}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
     volumes:
       - ./backend-api/logs:/app/logs
     ports:
