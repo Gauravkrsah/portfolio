@@ -1,6 +1,6 @@
 export async function fetchGeminiResponse(userMessage: string): Promise<{ text: string }> {
-  // Adjust the URL to your backend server running port
-  const apiUrl = 'http://localhost:4000/api/gemini-chat';
+  // Use environment variable for API URL or fall back to relative path
+  const apiUrl = import.meta.env.VITE_GEMINI_API_ENDPOINT || '/api/gemini-chat';
 
   const response = await fetch(apiUrl, {
     method: 'POST',

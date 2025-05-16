@@ -1,0 +1,15 @@
+---
+deployment:
+  tasks:
+    # Frontend deployment
+    - export DEPLOYPATH=/home/gauravsah/public_html/
+    - /bin/cp -R frontend/dist/* $DEPLOYPATH
+    
+    # Backend API deployment
+    - export APIPATH=/home/gauravsah/api/
+    - /bin/mkdir -p $APIPATH
+    - /bin/cp -R backend-api/* $APIPATH
+    
+    # Set up necessary permissions
+    - /bin/chmod 755 $DEPLOYPATH
+    - /bin/chmod 755 $APIPATH

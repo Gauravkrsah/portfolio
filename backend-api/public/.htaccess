@@ -1,0 +1,34 @@
+# API Backend .htaccess
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Redirect all requests to index.js
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.js [L]
+</IfModule>
+
+# Set HTTP headers for API
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+  Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  
+  # Handle preflight OPTIONS requests
+  RewriteEngine On
+  RewriteRule ^(.*)$ $1 [E=HTTP_ORIGIN:%{HTTP:ORIGIN}]
+  RewriteRule ^(.*)$ $1 [E=HTTP_ACCESS_CONTROL_REQUEST_METHOD:%{HTTP:ACCESS-CONTROL-REQUEST-METHOD}]
+  RewriteRule ^(.*)$ $1 [E=HTTP_ACCESS_CONTROL_REQUEST_HEADERS:%{HTTP:ACCESS-CONTROL-REQUEST-HEADERS}]
+  RewriteCond %{REQUEST_METHOD} OPTIONS
+  RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>
+
+# Deny access to sensitive files
+<FilesMatch "(\.env|\.env\..*|package\.json|package-lock\.json|node_modules)">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
