@@ -1,8 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/username/public_html/
-    - /bin/cp -R public_html/* $DEPLOYPATH
-    - export NODEPATH=/home/username/
-    - /bin/cp -R backend $NODEPATH
-    - /bin/cp package.json $NODEPATH
