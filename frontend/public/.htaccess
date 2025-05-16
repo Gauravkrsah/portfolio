@@ -19,6 +19,16 @@
 # Enable CORS
 <IfModule mod_headers.c>
   Header set Access-Control-Allow-Origin "*"
+  
+  # Security headers
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  
+  # Cache control for static assets
+  <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico)$">
+    Header set Cache-Control "max-age=31536000, public"
+  </FilesMatch>
   Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
   Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
 </IfModule>
