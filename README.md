@@ -59,3 +59,41 @@ This project will be configured for CI/CD pipeline using Git, Jenkins, and Docke
 - Automated testing and deployment
 
 The previous deployment configuration has been removed in favor of this more robust approach.
+
+## Docker Setup
+
+This project includes Docker configuration for both development and production environments.
+
+### Development with Docker
+
+To run the application using Docker in development mode:
+
+```bash
+docker-compose up
+```
+
+This will start both the frontend and backend services.
+
+### CI/CD with Jenkins
+
+The project is configured with a Jenkinsfile for CI/CD pipeline integration:
+
+1. **Pipeline Stages**:
+   - Checkout code from repository
+   - Install dependencies
+   - Run tests
+   - Build application
+   - Build and push Docker images
+   - Deploy to production
+
+2. **Required Jenkins Credentials**:
+   - Docker registry credentials
+   - API keys (Gemini, Supabase)
+
+3. **Running Production Deployment**:
+   
+   The production deployment uses a separate docker-compose file:
+   
+   ```bash
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```

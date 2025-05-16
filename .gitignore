@@ -43,3 +43,11 @@ dist-ssr
 deploy/
 .temp/
 .cache/
+
+# CI/CD and Docker
+.docker-data/
+*.env.ci
+docker-compose.override.yml
+
+# Jenkins related
+jenkins_home/
