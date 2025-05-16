@@ -139,11 +139,11 @@ const Footer: React.FC = () => {
               </h3>
               <div className="flex flex-col space-y-3">
                 <a
-                  href="mailto:contact@example.com"
+                  href="mailto:hello@gauravsah.com.np"
                   className="text-neutral-400 hover:text-green-400 transition-colors text-sm flex items-center"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  contact@example.com
+                  hello@gauravsah.com.np
                 </a>
 
                 <div className="flex space-x-4 pt-3"> {/* Reduced pt-4 to pt-3 */}

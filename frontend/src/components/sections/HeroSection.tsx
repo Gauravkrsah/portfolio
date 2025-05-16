@@ -20,16 +20,14 @@ const HeroSection: React.FC = () => {
   const handleScheduleClick = () => {
     setScheduleOpen(true);
   };
-
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center bg-[#151515] overflow-hidden pt-14 lg:pt-0">
+    <section className="relative min-h-[90vh] flex items-center justify-center bg-[#151515] overflow-hidden pt-4 sm:pt-8 lg:pt-0">
       {/* Background effect with reduced opacity */}
       <BackgroundBeams className="opacity-80 z-0" />
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          {/* Left side - Content */}
-          <div className="w-full lg:w-1/2 space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-8 sm:py-12 lg:py-16">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          {/* Left side - Content */}          <div className="w-full lg:w-1/2 space-y-6 sm:space-y-8">
             {/* Available for projects badge */}
             <div className="inline-flex items-center px-3 py-1 space-x-2 bg-[#FFB600]/20 backdrop-blur-sm border border-[#FFB600]/30 text-[#FFB600] rounded-full text-sm">
               <span className="w-2 h-2 rounded-full bg-[#FFB600] animate-pulse"></span>
@@ -71,13 +69,12 @@ const HeroSection: React.FC = () => {
               intuitive design. Specializing in modern web applications, responsive interfaces, 
               and scalable architecture.
             </motion.p>
-            
-            {/* Call to action buttons */}
+              {/* Call to action buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-wrap gap-3 sm:gap-5 mt-6 sm:mt-8"
+              className="flex flex-wrap gap-3 sm:gap-5 mt-4 sm:mt-6"
             >
               <Button 
                 className="group bg-gradient-to-r from-[#FFB600] to-[#e2eeff] hover:from-[#FFB600]/90 hover:to-[#e2eeff]/90 text-[#151515] font-medium rounded-full px-4 sm:px-7 py-2 sm:py-6 transition shadow-md hover:shadow-xl flex items-center gap-1 sm:gap-2 text-xs sm:text-base"
@@ -97,13 +94,12 @@ const HeroSection: React.FC = () => {
               </Button>
             </motion.div>
           </div>
-          
-          {/* Right side - Video card */}
+            {/* Right side - Video card */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="w-full lg:w-1/2 relative z-20"
+            className="w-full lg:w-1/2 relative z-20 mt-4 sm:mt-6 lg:mt-0"
           >
             <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
               <DialogTrigger asChild>
@@ -156,12 +152,16 @@ const HeroSection: React.FC = () => {
                     allowFullScreen
                   ></iframe>
                 </div>
-              </DialogContent>
-            </Dialog>
+              </DialogContent>            </Dialog>
             
             {/* Tech stack badges */}
-            <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6 justify-center">
-              {['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'UI/UX'].map((tech) => (
+            <div className="flex flex-wrap gap-2 sm:gap-3 mt-3 sm:mt-5 justify-center">
+              {[
+                'Design', 'Development', 'Marketing', 'UI/UX',
+                'SEO', 'Branding', 'E-commerce', 'Web App',
+                'Automation', 'Social Media', 'Landing Page',
+                'TypeScript', 'Nodejs', 'Tailwind CSS'
+              ].map((tech) => (
                 <span 
                   key={tech}
                   className="px-3 sm:px-4 py-1 sm:py-1.5 bg-[#FFB600]/10 border border-[#FFB600]/20 rounded-full text-xs sm:text-sm text-neutral-200 hover:border-[#FFB600]/40 hover:bg-[#FFB600]/15 transition-all"

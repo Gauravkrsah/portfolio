@@ -986,7 +986,7 @@ export const initializeDatabase = async () => {
       await adminSupabase.from('settings').insert([
         { key: 'site_title', value: 'My Portfolio' },
         { key: 'site_description', value: 'A showcase of my work and skills' },
-        { key: 'contact_email', value: 'contact@example.com' },
+        { key: 'contact_email', value: 'hello@gauravsah.com.np' },
         { key: 'social_twitter', value: 'https://twitter.com/example' },
         { key: 'social_linkedin', value: 'https://linkedin.com/in/example' },
         { key: 'social_github', value: 'https://github.com/example' }

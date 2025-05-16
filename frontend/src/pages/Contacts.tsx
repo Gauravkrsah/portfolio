@@ -124,10 +124,10 @@ const Contacts = () => {
                 <div>
                   <h3 className="text-xl font-medium mb-2 text-white">Email</h3>
                   <a 
-                    href="mailto:contact@gauravsah.com.np" 
+                    href="mailto:hello@gauravsah.com.np" 
                     className="text-[#FFB600] hover:text-[#FFB600]/80 hover:underline text-lg font-medium"
                   >
-                    contact@gauravsah.com.np
+                    hello@gauravsah.com.np
                   </a>
                   <p className="text-gray-200 text-sm mt-1">
                     I typically respond within 24 hours
