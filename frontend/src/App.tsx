@@ -22,6 +22,7 @@ import SubscribePopup from '@/components/ui/SubscribePopup';
 import MessagePopup from '@/components/ui/MessagePopup';
 import ChatPopup from '@/components/ui/ChatPopup';
 import SchedulePopup from '@/components/ui/SchedulePopup';
+import ChatConfig from '@/components/ui/ChatConfig';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Mail, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -118,9 +119,9 @@ const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AuthProvider>
+        <TooltipProvider>          <AuthProvider>
             <BrowserRouter>
+              <ChatConfig />
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Index />} />

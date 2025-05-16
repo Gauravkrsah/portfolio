@@ -10,6 +10,10 @@ deployment:
     - /bin/mkdir -p $APIPATH
     - /bin/cp -R backend-api/* $APIPATH
     
+    # Ensure docs directory is available for the chatbot
+    - /bin/mkdir -p $APIPATH/docs
+    - /bin/cp -R docs/* $APIPATH/docs/
+    
     # Set up necessary permissions
     - /bin/chmod 755 $DEPLOYPATH
     - /bin/chmod 755 $APIPATH

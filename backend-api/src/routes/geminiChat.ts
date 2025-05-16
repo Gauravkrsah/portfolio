@@ -8,7 +8,12 @@ const router = express.Router();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 console.log('[DEBUG] GEMINI_API_KEY (first 8 chars shown):', GEMINI_API_KEY ? (GEMINI_API_KEY.substring(0, 8) + '...') : '(not set)');
 
-const CHATDATA_PATH = path.resolve(__dirname, '../../../docs/chatdata.md');
+// Determine chatdata.md path based on environment
+const CHATDATA_PATH = process.env.NODE_ENV === 'production'
+  ? path.resolve(__dirname, '../../docs/chatdata.md')
+  : path.resolve(__dirname, '../../../docs/chatdata.md');
+
+console.log('[DEBUG] Looking for chatdata.md at:', CHATDATA_PATH);
 
 if (!GEMINI_API_KEY) {
   console.error('FATAL: GEMINI_API_KEY is not set in environment variables. Set it in .env and restart the backend!');
@@ -20,10 +25,22 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 async function loadChatData(): Promise<string> {
   try {
     const data = await fs.readFile(CHATDATA_PATH, 'utf-8');
+    console.log('[DEBUG] Successfully loaded chatdata.md');
     return data;
   } catch (error) {
-    console.error('Failed to load chat data:', error);
-    return '';
+    console.error('Failed to load chat data from path:', CHATDATA_PATH, error);
+    
+    // Fallback content if the file cannot be found
+    const fallbackContent = `
+**Gaurav Kr Sah - Portfolio Summary**
+
+I am Gaurav Kr Sah, pursuing Bachelor's in Computer Applications (BCA), specializing in product designing, digital marketing, UI/UX design, and website development. I have experience in HTML, CSS, JavaScript, React, and digital marketing strategies including SEO, social media marketing, and paid advertising.
+
+My expertise includes product designing using Figma, UI/UX design with user research, frontend development, and digital marketing across various channels. I've worked on several projects including CropSay, an agricultural startup, and RJIT College website redesign.
+    `;
+    
+    console.log('[DEBUG] Using fallback content for chat responses');
+    return fallbackContent;
   }
 }
 
@@ -95,31 +112,58 @@ User: ${userMessage}`;
 }
 
 router.post('/gemini-chat', async (req, res) => {
+  console.log('[DEBUG] Gemini chat request received:', req.body ? 'Has body' : 'No body');
   try {
     if (!req.body?.message) {
-      return res.status(400).json({ error: 'Missing \`message\` in request body' });
+      console.error('[ERROR] Missing message in request body');
+      return res.status(400).json({ error: 'Missing message in request body' });
     }
 
     const userMessage = req.body.message;
+    console.log('[DEBUG] User message:', userMessage.substring(0, 30) + '...');
+    
     const chatdata = await loadChatData();
+    if (!chatdata || chatdata.trim() === '') {
+      console.error('[ERROR] No chat data available, even after fallback');
+      return res.status(500).json({ 
+        answer: "I apologize, I could not access my knowledge base right now. Please try again or contact Gaurav directly."
+      });
+    }
+    
     const relevantSnippets = findRelevantSnippets(chatdata, userMessage).join('\n\n---\n\n');
     const prompt = createPrompt(relevantSnippets, userMessage);
+    
+    console.log('[DEBUG] Calling Gemini API...');
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const result = await model.generateContent(prompt);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(prompt);
+      if (!result || !result.response || !result.response.candidates || !Array.isArray(result.response.candidates) || result.response.candidates.length === 0) {
+        console.error('[ERROR] No valid response from Gemini API');
+        return res.status(500).json({ 
+          answer: "I apologize, I couldn't generate a response at the moment. Please try again or contact Gaurav directly." 
+        });
+      }
 
-    if (!result || !result.response || !result.response.candidates || !Array.isArray(result.response.candidates) || result.response.candidates.length === 0) {
-      return res.status(500).json({ error: 'No answer generated' });
+      const candidate = result.response.candidates[0];
+      const parts = candidate?.content?.parts || [];
+      const answerText = parts.length > 0 ? parts.map((p: any) => p.text).join('') : '(no content)';
+      
+      console.log('[DEBUG] Got Gemini response:', answerText.substring(0, 30) + '...');
+      res.json({ answer: answerText });
+    } catch (geminiError) {
+      console.error('[ERROR] Gemini API error:', geminiError);
+      // Return a friendly response instead of an error status
+      return res.json({ 
+        answer: "I apologize, I'm having trouble connecting to my knowledge base right now. Please try again in a moment or contact Gaurav directly."
+      });
     }
-
-    const candidate = result.response.candidates[0];
-    const parts = candidate?.content?.parts || [];
-    const answerText = parts.length > 0 ? parts.map((p: any) => p.text).join('') : '(no content)';
-
-    res.json({ answer: answerText });
   } catch (error) {
-    console.error('Gemini chat error:', error);
-    res.status(500).json({ error: String(error) });
+    console.error('[ERROR] General chat error:', error);
+    // Return a friendly response instead of an error status
+    res.json({ 
+      answer: "I apologize, I could not process your question right now. Please try again or contact Gaurav directly."
+    });
   }
 });
 
