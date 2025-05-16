@@ -3,8 +3,16 @@
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
+  
+  # If the requested resource exists as a file or directory, serve it directly
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # API requests should be proxied to the Node.js server when in cPanel
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^api/(.*)$ /api/$1 [L,QSA]
+  
+  # Otherwise, serve index.html for all other requests (SPA routing)
   RewriteRule . /index.html [L]
 </IfModule>
 

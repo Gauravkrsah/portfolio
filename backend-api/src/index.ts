@@ -15,9 +15,12 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Routes - handle both root paths and /api paths for flexibility
+// This ensures the API works both when accessed directly and when accessed through URL rewriting
+app.use('/', healthRoutes);
 app.use('/api', healthRoutes);
-app.use('/api', geminiChatRoutes); // Changed to /api to match client expectation
+app.use('/', geminiChatRoutes); 
+app.use('/api', geminiChatRoutes);
 
 // Start server
 app.listen(port, () => {

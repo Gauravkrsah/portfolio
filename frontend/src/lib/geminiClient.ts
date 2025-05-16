@@ -1,6 +1,13 @@
 export async function fetchGeminiResponse(userMessage: string): Promise<{ text: string }> {
-  // Use environment variable for API URL or fall back to relative path
-  const apiUrl = import.meta.env.VITE_GEMINI_API_ENDPOINT || '/api/gemini-chat';
+  // Get base API URL from environment or construct it from window.location
+  const baseApiUrl = import.meta.env.VITE_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:4000' : '');
+  
+  // Construct full API URL with proper path handling for production
+  const apiUrl = import.meta.env.VITE_GEMINI_API_ENDPOINT || 
+    (baseApiUrl ? `${baseApiUrl}/gemini-chat` : '/api/gemini-chat');
+  
+  console.log('Using API URL:', apiUrl);
   
   // Max retries and timeout settings
   const MAX_RETRIES = 2;

@@ -1,12 +1,18 @@
 # API Backend .htaccess
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /
   
-  # Redirect all requests to index.js
+  # Set base according to deployment context
+  # This helps with proper handling in cPanel sub-application context
+  RewriteBase /api/
+  
+  # Support direct access to API endpoints
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.*)$ index.js [L]
+  RewriteRule ^(.*)$ index.js [QSA,L]
+  
+  # Special handling for gemini-chat endpoint
+  RewriteRule ^gemini-chat$ index.js [QSA,L]
 </IfModule>
 
 # Set HTTP headers for API

@@ -113,6 +113,17 @@ User: ${userMessage}`;
 
 router.post('/gemini-chat', async (req, res) => {
   console.log('[DEBUG] Gemini chat request received:', req.body ? 'Has body' : 'No body');
+  
+  // Set appropriate CORS headers for production environment
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // Handle OPTIONS requests (preflight CORS)
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
   try {
     if (!req.body?.message) {
       console.error('[ERROR] Missing message in request body');

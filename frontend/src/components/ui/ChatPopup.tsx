@@ -119,10 +119,11 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
         return;
       }
       
-      // Call Gemini for non-intent messages
+      // Call Gemini for non-intent messages with retry logic built-in
+      console.log('Sending message to Gemini API:', userMessage.substring(0, 30) + '...');
       const response = await fetchGeminiResponse(userMessage);
+      console.log('Received response from Gemini API');
       let botText = response.text || 'I apologize, but I\'m unable to provide an answer at the moment. Please try rephrasing your question or ask me something else.';
-      
       // Add action buttons to Gemini responses based on content heuristics
       let actions: ActionButton[] | undefined = undefined;
       
