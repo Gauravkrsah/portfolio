@@ -1,0 +1,21 @@
+{
+  "apps": [
+    {
+      "name": "portfolio-api",
+      "script": "dist/index.js",
+      "cwd": "/home8/cropsayc/public_html/gauravsah.com.np/api",
+      "instances": 1,
+      "exec_mode": "fork",
+      "watch": false,
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 4000
+      },
+      "log_date_format": "YYYY-MM-DD HH:mm:ss",
+      "out_file": "logs/out.log",
+      "error_file": "logs/error.log",
+      "merge_logs": true,
+      "max_memory_restart": "200M"
+    }
+  ]
+}

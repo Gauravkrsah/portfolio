@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: portfolio-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      # These will need to be set when running in production
+      # - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # - SUPABASE_URL=${SUPABASE_URL}
+      # - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      # - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    volumes:
+      - ./backend-api/logs:/app/logs
+    ports:
+      - "4000:4000"
+    networks:
+      - portfolio-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - portfolio-network
+
+networks:
+  portfolio-network:
+    driver: bridge
+
+# For production deployment, use a .env file or environment variables
+# Example of running with env file:
+# docker-compose --env-file .env.production up -d
