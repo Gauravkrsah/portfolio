@@ -30,10 +30,16 @@ dist-ssr
 .env.production
 .env.test
 
-# Sensitive files and credentials
+# Secrets and keys
+**/keys/*
+**/secrets/*
 *.pem
 *.key
-credentials.json
-*_credentials.*
-*_key.*
-*_secret.*
+*.p12
+*.pfx
+*.cert
+
+# Build output and temporary files
+deploy/
+.temp/
+.cache/
