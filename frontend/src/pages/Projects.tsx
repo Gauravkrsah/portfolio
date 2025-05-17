@@ -83,7 +83,7 @@ const Projects: React.FC = () => {
   const { data: projects, isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: getProjects
-  });  // Filter projects based on category and search query
+  });  // Improved filter logic with cleaner implementation
   const filteredProjects = React.useMemo(() => {
     if (!projects) return [];
     
@@ -95,26 +95,42 @@ const Projects: React.FC = () => {
         // When "All" is selected, show all projects
         matchesCategory = true;
       } else {
-        // Find the parent category of the selected subcategory
-        const parentCategory = categoryGroups.find(group => 
-          group.categories.includes(activeCategory)
-        )?.name;
+        // Find the parent category group of the selected category/subcategory
+        const parentCategoryGroup = categoryGroups.find(group => 
+          group.name === activeCategory || group.categories.includes(activeCategory)
+        );
         
-        // Check if any project technology tag matches or contains the active category
-        matchesCategory = project.technologies?.some(tech => {
-          // Handle direct match with subcategory
-          const directMatch = tech === activeCategory;
-          
-          // Handle partial match with subcategory
-          const partialMatch = tech.toLowerCase().includes(activeCategory.toLowerCase()) || 
-                              activeCategory.toLowerCase().includes(tech.toLowerCase());
-          
-          // Match by category group (parent category)
-          const categoryMatch = parentCategory && 
-                              tech.toLowerCase().includes(parentCategory.toLowerCase());
-          
-          return directMatch || partialMatch || categoryMatch;
-        }) || false;
+        if (parentCategoryGroup) {
+          // If the active category is a main category (matches a group name)
+          if (parentCategoryGroup.name === activeCategory) {
+            // Match any technology that relates to this category group
+            matchesCategory = project.technologies?.some(tech => {
+              // Direct match with the category name
+              const directCategoryMatch = tech.toLowerCase() === activeCategory.toLowerCase();
+              
+              // Check if any technology contains the category name
+              const containsCategoryName = tech.toLowerCase().includes(activeCategory.toLowerCase());
+              
+              // Also match any subcategory in this group
+              const matchesSubcategory = parentCategoryGroup.categories.some(subcat => 
+                tech.toLowerCase().includes(subcat.toLowerCase())
+              );
+              
+              return directCategoryMatch || containsCategoryName || matchesSubcategory;
+            }) || false;
+          } else {
+            // It's a subcategory, so check for specific match with the subcategory
+            matchesCategory = project.technologies?.some(tech => {
+              // Direct match with selected subcategory
+              const directMatch = tech.toLowerCase() === activeCategory.toLowerCase();
+              
+              // If no direct match, check if technology contains the subcategory name
+              const containsSubcategory = tech.toLowerCase().includes(activeCategory.toLowerCase());
+              
+              return directMatch || containsSubcategory;
+            }) || false;
+          }
+        }
       }
       
       // Check if project matches the search query
@@ -137,27 +153,35 @@ const Projects: React.FC = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
-  
-  // Handle main category click
+    // Handle main category click - improved logic
   const handleMainCategoryClick = (categoryName: string) => {
-    if (expandedCategory === categoryName) {
-      // If clicking the already expanded category, collapse it
+    // If "All" is selected, immediately apply filter and clear any expanded category
+    if (categoryName === "All") {
+      setActiveCategory("All");
       setExpandedCategory(null);
-      // If All is selected when collapsing, keep it, otherwise clear selection
-      setActiveCategory(activeCategory === "All" ? "All" : 
-                        categoryName === "All" ? "All" : activeCategory);
+      return;
+    }
+    
+    // If clicking on the already expanded category
+    if (expandedCategory === categoryName) {
+      // Just collapse without changing the active category
+      setExpandedCategory(null);
     } else {
       // Expand the clicked category
       setExpandedCategory(categoryName);
-      // If selecting "All", set it as active
-      if (categoryName === "All") {
-        setActiveCategory("All");
-      }
+      
+      // Also set the main category as active to show all items in this category
+      // This makes the filter behavior more intuitive as clicking a main category
+      // will show all items in that category
+      setActiveCategory(categoryName);
     }
   };
-    // Handle subcategory click
+  
+  // Handle subcategory click - improved behavior
   const handleSubCategoryClick = (category: string) => {
     setActiveCategory(category);
+    // Keep the parent category expanded when selecting a subcategory
+    // This maintains context and makes the UI more intuitive
   };
   
   // Add CSS styles to head using useEffect
@@ -227,31 +251,42 @@ const Projects: React.FC = () => {
               <div className="mb-6">
                 <h1 className="text-2xl font-bold mb-1">Projects</h1>
                 <p className="text-gray-400 text-sm">A showcase of my development and design work</p>
-              </div>
-              {/* Flex container for search and filters */}
+              </div>              {/* Flex container for search and filters */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  {/* Search input - full width on mobile, inline on desktop */}
-                  <div className="relative w-full sm:w-56 lg:w-64 order-1 sm:order-2 sm:ml-auto">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
-                    <input
-                      type="text"
-                      placeholder="Search projects..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 pr-3 py-2 bg-gray-800/90 border border-gray-700 rounded-lg text-white w-full text-xs focus:outline-none focus:ring-1 focus:ring-[#FFB600] focus:border-transparent"
-                    />
+                  {/* Search input - completely revamped to avoid any borders */}
+                  <div className="w-full sm:w-64 lg:w-72 order-1 sm:order-2 sm:ml-auto">
+                    <label className="relative block">
+                      <span className="sr-only">Search</span>
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <Search className="h-4 w-4 text-gray-400" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search projects..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="block w-full rounded-full bg-[#1e293b]/70 py-2 pl-10 pr-3 text-white text-xs appearance-none focus:outline-none"
+                        style={{
+                          boxShadow: 'none',
+                          WebkitAppearance: 'none'
+                        }}
+                      />
+                    </label>
                   </div>
                   
                   {/* Categories container */}
                   <div className="space-y-3 order-2 sm:order-1 w-full sm:w-auto">
-                    {/* Main Categories */}
-                  <div className="flex flex-wrap gap-2">
+                    {/* Main Categories */}                  <div className="flex flex-wrap gap-2">
                     {categoryGroups.map((group) => {
-                      // Determine if this category is active (either expanded or "All" selected)
-                      const isActive = expandedCategory === group.name || 
-                                      (group.name === "All" && activeCategory === "All") ||
-                                      (activeCategory !== "All" && 
-                                       categoryGroups.find(g => g.name === group.name)?.categories.includes(activeCategory));
+                      // Improved active state detection logic
+                      const isCategoryMatch = activeCategory === group.name;
+                      const isParentOfActive = group.name !== "All" && 
+                                            group.categories.includes(activeCategory);
+                      const isAllAndAllActive = group.name === "All" && activeCategory === "All";
+                      const isExpanded = expandedCategory === group.name;
+                      
+                      // Determine active state using improved logic
+                      const isActive = isCategoryMatch || isParentOfActive || isAllAndAllActive;
                       
                       return (
                         <button
@@ -262,6 +297,9 @@ const Projects: React.FC = () => {
                             isActive
                               ? "bg-[#FFB600] text-[#151515] shadow-lg shadow-[#FFB600]/20"
                               : "bg-gray-800 text-white hover:bg-gray-700 hover:shadow",
+                            isExpanded && !isActive
+                              ? "ring-2 ring-[#FFB600]/50" // Highlight expanded but not active
+                              : "",
                             "flex items-center gap-1.5 flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-0 justify-center"
                           )}
                         >
@@ -328,8 +366,7 @@ const Projects: React.FC = () => {
                       );
                     })}
                   </div>
-                  
-                  {/* Subcategories - animated container that's always present but only visible when needed */}
+                    {/* Subcategories - improved animated container with better UX */}
                   <div 
                     className={cn(
                       "overflow-hidden transition-all duration-300 ease-in-out",
@@ -341,14 +378,26 @@ const Projects: React.FC = () => {
                       maxHeight: expandedCategory && expandedCategory !== "All" ? '300px' : '0px'
                     }}
                   >
-                    <div className="bg-gray-900/60 backdrop-blur-sm p-3 rounded-lg border border-gray-800 max-h-[200px] overflow-y-auto subcategories-container">                      <h3 className="text-xs font-medium text-gray-400 mb-3 sticky top-0 bg-gray-900/90 py-1">
-                        {expandedCategory} Categories
-                      </h3>
+                    <div className="bg-gray-900/60 backdrop-blur-sm p-3 rounded-lg border border-gray-800 max-h-[200px] overflow-y-auto subcategories-container">
+                      <div className="flex justify-between items-center sticky top-0 bg-gray-900/90 py-1">
+                        <h3 className="text-xs font-medium text-gray-400 mb-2">
+                          {expandedCategory} Categories
+                        </h3>
+                        {/* Show which subcategory is active as a chip/badge */}
+                        {activeCategory !== expandedCategory && activeCategory !== "All" && 
+                         expandedCategory && categoryGroups.find(g => g.name === expandedCategory)?.categories.includes(activeCategory) && (
+                          <span className="text-[10px] bg-[#FFB600]/20 text-[#FFB600] px-2 py-0.5 rounded-full">
+                            {activeCategory}
+                          </span>
+                        )}
+                      </div>
                       
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {expandedCategory && categoryGroups
                           .find(group => group.name === expandedCategory)
-                          ?.categories.map((category, idx) => (
+                          ?.categories
+                          .filter(category => category !== "All") // Don't show "All" in the subcategory list
+                          .map((category, idx) => (
                             <button
                               key={category}
                               onClick={() => handleSubCategoryClick(category)}
@@ -365,7 +414,8 @@ const Projects: React.FC = () => {
                             >
                               {category}
                             </button>
-                          ))}                      </div>
+                          ))}
+                      </div>
                     </div>
                   </div>
                   </div>

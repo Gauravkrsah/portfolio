@@ -83,8 +83,7 @@ const Blogs: React.FC = () => {
   const { data: blogPosts, isLoading, error } = useQuery({
     queryKey: ['blogPosts'],
     queryFn: getBlogPosts
-  });
-  // Filter blog posts based on category and search query
+  });  // Improved filter logic with cleaner implementation
   const filteredBlogs = React.useMemo(() => {
     if (!blogPosts) return [];
     
@@ -96,26 +95,42 @@ const Blogs: React.FC = () => {
         // When "All" is selected, show all blogs
         matchesCategory = true;
       } else {
-        // Find the parent category of the selected subcategory
-        const parentCategory = categoryGroups.find(group => 
-          group.categories.includes(activeCategory)
-        )?.name;
+        // Find the parent category group of the selected category/subcategory
+        const parentCategoryGroup = categoryGroups.find(group => 
+          group.name === activeCategory || group.categories.includes(activeCategory)
+        );
         
-        // Check if any blog category matches or contains the active category
-        matchesCategory = blog.categories?.some(cat => {
-          // Handle direct match with subcategory
-          const directMatch = cat === activeCategory;
-          
-          // Handle partial match with subcategory
-          const partialMatch = cat.toLowerCase().includes(activeCategory.toLowerCase()) || 
-                              activeCategory.toLowerCase().includes(cat.toLowerCase());
-          
-          // Match by category group (parent category)
-          const categoryMatch = parentCategory && 
-                              cat.toLowerCase().includes(parentCategory.toLowerCase());
-          
-          return directMatch || partialMatch || categoryMatch;
-        }) || false;
+        if (parentCategoryGroup) {
+          // If the active category is a main category (matches a group name)
+          if (parentCategoryGroup.name === activeCategory) {
+            // Match any blog category that relates to this category group
+            matchesCategory = blog.categories?.some(cat => {
+              // Direct match with the category name
+              const directCategoryMatch = cat.toLowerCase() === activeCategory.toLowerCase();
+              
+              // Check if any category contains the category name
+              const containsCategoryName = cat.toLowerCase().includes(activeCategory.toLowerCase());
+              
+              // Also match any subcategory in this group
+              const matchesSubcategory = parentCategoryGroup.categories.some(subcat => 
+                cat.toLowerCase().includes(subcat.toLowerCase())
+              );
+              
+              return directCategoryMatch || containsCategoryName || matchesSubcategory;
+            }) || false;
+          } else {
+            // It's a subcategory, so check for specific match with the subcategory
+            matchesCategory = blog.categories?.some(cat => {
+              // Direct match with selected subcategory
+              const directMatch = cat.toLowerCase() === activeCategory.toLowerCase();
+              
+              // If no direct match, check if category contains the subcategory name
+              const containsSubcategory = cat.toLowerCase().includes(activeCategory.toLowerCase());
+              
+              return directMatch || containsSubcategory;
+            }) || false;
+          }
+        }
       }
       
       // Check if blog matches the search query
@@ -132,28 +147,34 @@ const Blogs: React.FC = () => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
-  
-  // Handle main category click
+    // Handle main category click - improved logic
   const handleMainCategoryClick = (categoryName: string) => {
-    if (expandedCategory === categoryName) {
-      // If clicking the already expanded category, collapse it
+    // If "All" is selected, immediately apply filter and clear any expanded category
+    if (categoryName === "All") {
+      setActiveCategory("All");
       setExpandedCategory(null);
-      // If All is selected when collapsing, keep it, otherwise clear selection
-      setActiveCategory(activeCategory === "All" ? "All" : 
-                        categoryName === "All" ? "All" : activeCategory);
+      return;
+    }
+    
+    // If clicking on the already expanded category
+    if (expandedCategory === categoryName) {
+      // Just collapse without changing the active category
+      setExpandedCategory(null);
     } else {
       // Expand the clicked category
       setExpandedCategory(categoryName);
-      // If selecting "All", set it as active
-      if (categoryName === "All") {
-        setActiveCategory("All");
-      }
+      
+      // Also set the main category as active to show all items in this category
+      // This makes the filter behavior more intuitive
+      setActiveCategory(categoryName);
     }
   };
   
-  // Handle subcategory click
+  // Handle subcategory click - improved behavior
   const handleSubCategoryClick = (category: string) => {
     setActiveCategory(category);
+    // Keep the parent category expanded when selecting a subcategory
+    // This maintains context and makes the UI more intuitive
   };
   
   // Add CSS styles for animations
@@ -238,29 +259,41 @@ const Blogs: React.FC = () => {
             )}>
               <h1 className="text-3xl font-bold mb-2">Blog</h1>
               <p className="text-gray-400 mb-6">Insights and thoughts on design, development, and technology</p>
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                {/* Search input - full width on mobile, inline on desktop */}
-                <div className="relative w-full sm:w-56 lg:w-64 order-1 sm:order-2 sm:ml-auto">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
-                  <input
-                    type="text"
-                    placeholder="Search blog posts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 pr-3 py-2 bg-gray-800/90 border border-gray-700 rounded-lg text-white w-full text-xs focus:outline-none focus:ring-1 focus:ring-[#FFB600] focus:border-transparent"
-                  />
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">                {/* Search input - clean design without inner borders */}
+                <div className="w-full sm:w-64 lg:w-72 order-1 sm:order-2 sm:ml-auto">
+                  <label className="relative block">
+                    <span className="sr-only">Search</span>
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Search className="h-4 w-4 text-gray-400" />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search blog posts..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="block w-full rounded-full bg-[#1e293b]/70 py-2 pl-10 pr-3 text-white text-xs appearance-none focus:outline-none"
+                      style={{
+                        boxShadow: 'none',
+                        WebkitAppearance: 'none'
+                      }}
+                      spellCheck="false"
+                    />
+                  </label>
                 </div>
                 
                 {/* Categories container */}
                 <div className="space-y-3 order-2 sm:order-1 w-full sm:w-auto">
-                  {/* Main Categories */}
-                  <div className="flex flex-wrap gap-2">
+                  {/* Main Categories */}                  <div className="flex flex-wrap gap-2">
                     {categoryGroups.map((group) => {
-                      // Determine if this category is active (either expanded or "All" selected)
-                      const isActive = expandedCategory === group.name || 
-                                      (group.name === "All" && activeCategory === "All") ||
-                                      (activeCategory !== "All" && 
-                                       categoryGroups.find(g => g.name === group.name)?.categories.includes(activeCategory));
+                      // Improved active state detection logic
+                      const isCategoryMatch = activeCategory === group.name;
+                      const isParentOfActive = group.name !== "All" && 
+                                            group.categories.includes(activeCategory);
+                      const isAllAndAllActive = group.name === "All" && activeCategory === "All";
+                      const isExpanded = expandedCategory === group.name;
+                      
+                      // Determine active state using improved logic
+                      const isActive = isCategoryMatch || isParentOfActive || isAllAndAllActive;
                       
                       return (
                         <button
@@ -269,8 +302,11 @@ const Blogs: React.FC = () => {
                           className={cn(
                             "px-3 sm:px-3 py-2 mb-1 rounded-lg text-sm font-medium transition-all duration-300",
                             isActive
-                              ? "bg-[#FFB600] text-[#151515] shadow-lg shadow-[#FFB600]/20"
+                              ? "bg-[#FFB600] text-[#151515] shadow-lg shadow-[#FFB600]/20" 
                               : "bg-gray-800 text-white hover:bg-gray-700 hover:shadow",
+                            isExpanded && !isActive
+                              ? "ring-2 ring-[#FFB600]/50" // Highlight expanded but not active
+                              : "",
                             "flex items-center gap-1.5 flex-shrink-0 sm:flex-shrink min-w-[90px] sm:min-w-0 justify-center"
                           )}
                         >
@@ -336,8 +372,7 @@ const Blogs: React.FC = () => {
                       );
                     })}
                   </div>
-                  
-                  {/* Subcategories - animated container that's always present but only visible when needed */}
+                    {/* Subcategories - improved animated container with better UX */}
                   <div 
                     className={cn(
                       "overflow-hidden transition-all duration-300 ease-in-out",
@@ -350,14 +385,25 @@ const Blogs: React.FC = () => {
                     }}
                   >
                     <div className="bg-gray-900/60 backdrop-blur-sm p-3 rounded-lg border border-gray-800 max-h-[200px] overflow-y-auto subcategories-container">
-                      <h3 className="text-xs font-medium text-gray-400 mb-3 sticky top-0 bg-gray-900/90 py-1">
-                        {expandedCategory} Categories
-                      </h3>
+                      <div className="flex justify-between items-center sticky top-0 bg-gray-900/90 py-1">
+                        <h3 className="text-xs font-medium text-gray-400 mb-2">
+                          {expandedCategory} Categories
+                        </h3>
+                        {/* Show which subcategory is active as a chip/badge */}
+                        {activeCategory !== expandedCategory && activeCategory !== "All" && 
+                         expandedCategory && categoryGroups.find(g => g.name === expandedCategory)?.categories.includes(activeCategory) && (
+                          <span className="text-[10px] bg-[#FFB600]/20 text-[#FFB600] px-2 py-0.5 rounded-full">
+                            {activeCategory}
+                          </span>
+                        )}
+                      </div>
                       
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {expandedCategory && categoryGroups
                           .find(group => group.name === expandedCategory)
-                          ?.categories.map((category, idx) => (
+                          ?.categories
+                          .filter(category => category !== "All") // Don't show "All" in the subcategory list
+                          .map((category, idx) => (
                             <button
                               key={category}
                               onClick={() => handleSubCategoryClick(category)}

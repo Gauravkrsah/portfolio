@@ -66,15 +66,14 @@ const RecentWorks: React.FC = () => {
               Exploring my latest freelance and personal projects
             </p>
           </div>
-          
-          <Link
-            to="/other-works" 
+            <Link
+            to="/projects" 
             className={cn(
               "text-sm text-gray-400 hover:text-white flex items-center gap-1 transition-all duration-700 delay-200",
               isVisible ? "opacity-100" : "opacity-0"
             )}
           >
-            View all works <ArrowRight className="h-3 w-3" />
+            View all projects <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
         

@@ -9,7 +9,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import ProjectsManagement from '@/components/admin/ProjectsManagement';
 import BlogsManagement from '@/components/admin/BlogsManagement';
-import OtherWorksManagement from '@/components/admin/OtherWorksManagement';
 import MessagesManagement from '@/components/admin/MessagesManagement';
 import VideosManagement from '@/components/admin/VideosManagement';
 import MeetingsManagement from '@/components/admin/MeetingsManagement';
@@ -80,18 +79,11 @@ const AdminDashboard: React.FC = () => {
                 className="justify-start px-4 py-2 data-[state=active]:bg-muted w-full rounded-none border-l-2 border-transparent data-[state=active]:border-primary"
               >
                 Blog Posts
-              </TabsTrigger>
-              <TabsTrigger
+              </TabsTrigger>              <TabsTrigger
                 value="videos"
                 className="justify-start px-4 py-2 data-[state=active]:bg-muted w-full rounded-none border-l-2 border-transparent data-[state=active]:border-primary"
               >
                 Contents
-              </TabsTrigger>
-              <TabsTrigger
-                value="other-works"
-                className="justify-start px-4 py-2 data-[state=active]:bg-muted w-full rounded-none border-l-2 border-transparent data-[state=active]:border-primary"
-              >
-                Other Works
               </TabsTrigger>
               <TabsTrigger
                 value="messages"
@@ -144,12 +136,8 @@ const AdminDashboard: React.FC = () => {
           </TabsContent>
           <TabsContent value="blogs" className="mt-0 border-0 p-0">
             <BlogsManagement />
-          </TabsContent>
-          <TabsContent value="videos" className="mt-0 border-0 p-0">
+          </TabsContent>          <TabsContent value="videos" className="mt-0 border-0 p-0">
             <VideosManagement />
-          </TabsContent>
-          <TabsContent value="other-works" className="mt-0 border-0 p-0">
-            <OtherWorksManagement />
           </TabsContent>
           <TabsContent value="messages" className="mt-0 border-0 p-0">
             <MessagesManagement />

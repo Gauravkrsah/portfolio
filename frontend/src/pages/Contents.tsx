@@ -82,8 +82,7 @@ const Contents: React.FC = () => {
   const { data: contentItems, isLoading, error } = useQuery({
     queryKey: ['contents'],
     queryFn: getContents
-  });
-  // Filter contents based on category and search query
+  });  // Improved filter logic with cleaner implementation
   const filteredContents = React.useMemo(() => {
     if (!contentItems) return [];
     
@@ -95,68 +94,101 @@ const Contents: React.FC = () => {
         // When "All" is selected, show all contents
         matchesCategory = true;
       } else {
-        // Find the parent category of the selected subcategory
-        const parentCategory = categoryGroups.find(group => 
-          group.categories.includes(activeCategory)
-        )?.name;
+        // Find the parent category group of the selected category/subcategory
+        const parentCategoryGroup = categoryGroups.find(group => 
+          group.name === activeCategory || group.categories.includes(activeCategory)
+        );
         
-        // Determine content platform and type
+        // For Content page, we need special handling for different content types
         const platform = content.platform || "Other";
         const contentType = content.content_type || "";
         
-        // Special cases handling
+        // Special cases handling for common content types
         const isYouTubeShorts = platform.toLowerCase().includes('youtube') && contentType.toLowerCase() === 'short';
         const isInstagramReels = platform.toLowerCase().includes('instagram') && contentType.toLowerCase() === 'reel';
         const isTikTokVideo = platform.toLowerCase().includes('tiktok');
-        
-        // Match by short form content
         const isShortFormContent = isYouTubeShorts || isInstagramReels || isTikTokVideo;
         
-        // Check if current category is in "Short Form" group and content is a short form content
-        if (parentCategory === "Short Form" && isShortFormContent) {
-          // Check for specific short form category matches
-          if (activeCategory === "YouTube Shorts" && isYouTubeShorts) {
-            matchesCategory = true;
-          } else if (activeCategory === "Instagram Reels" && isInstagramReels) {
-            matchesCategory = true;
-          } else if (activeCategory === "TikTok Videos" && isTikTokVideo) {
-            matchesCategory = true;
-          } else if (activeCategory === "Short Tutorials" || 
-                    activeCategory === "Code Snippets" || 
-                    activeCategory === "Quick Tips") {
-            // For specific types of shorts, check content title/type for keywords
-            matchesCategory = content.title.toLowerCase().includes(activeCategory.toLowerCase()) ||
-                             (contentType && contentType.toLowerCase().includes(activeCategory.toLowerCase()));
-          }
-        }
-        // Check if YouTube regular videos
-        else if (parentCategory === "YouTube" && platform.toLowerCase().includes('youtube') && !isYouTubeShorts) {
-          if (activeCategory === "Regular Videos") {
-            matchesCategory = true;
+        if (parentCategoryGroup) {
+          // If the active category is a main category (matches a group name)
+          if (parentCategoryGroup.name === activeCategory) {
+            // Match by main category
+            switch (activeCategory) {
+              case "YouTube":
+                // Match any YouTube content
+                matchesCategory = platform.toLowerCase().includes('youtube');
+                break;
+              
+              case "Short Form":
+                // Match any short form content
+                matchesCategory = isShortFormContent;
+                break;
+              
+              case "Social Media":
+                // Match any social media content that's not a short
+                matchesCategory = 
+                  platform.toLowerCase().includes('instagram') ||
+                  platform.toLowerCase().includes('facebook') ||
+                  platform.toLowerCase().includes('twitter') ||
+                  platform.toLowerCase().includes('linkedin') ||
+                  platform.toLowerCase().includes('pinterest') ||
+                  platform.toLowerCase().includes('threads');
+                break;
+              
+              case "Articles":
+                // Match any article type content
+                matchesCategory = 
+                  (contentType && contentType.toLowerCase().includes('article')) ||
+                  (contentType && contentType.toLowerCase().includes('blog')) ||
+                  (contentType && contentType.toLowerCase().includes('guide')) ||
+                  (contentType && contentType.toLowerCase().includes('case study'));
+                break;
+              
+              default:
+                // Default behavior for any other main category
+                matchesCategory = 
+                  platform.toLowerCase().includes(activeCategory.toLowerCase()) ||
+                  (contentType && contentType.toLowerCase().includes(activeCategory.toLowerCase()));
+            }
           } else {
-            // For specific YouTube content types, check title/type for keywords
-            matchesCategory = content.title.toLowerCase().includes(activeCategory.toLowerCase()) ||
-                             (contentType && contentType.toLowerCase().includes(activeCategory.toLowerCase()));
+            // It's a subcategory, handle specific subcategories
+            switch (activeCategory) {
+              case "YouTube Shorts":
+                matchesCategory = isYouTubeShorts;
+                break;
+                
+              case "Instagram Reels":
+                matchesCategory = isInstagramReels;
+                break;
+                
+              case "TikTok Videos":
+                matchesCategory = isTikTokVideo;
+                break;
+                
+              case "Regular Videos":
+                matchesCategory = platform.toLowerCase().includes('youtube') && !isYouTubeShorts;
+                break;
+                
+              case "Instagram Posts":
+                matchesCategory = platform.toLowerCase().includes('instagram') && !isInstagramReels;
+                break;
+                
+              // For social platforms, check the platform name
+              case "Facebook":
+              case "Twitter":
+              case "LinkedIn":
+              case "Pinterest":
+              case "Thread Posts":
+                matchesCategory = platform.toLowerCase().includes(activeCategory.toLowerCase());
+                break;
+                
+              // For content type categories, check the content_type and title
+              default:
+                matchesCategory = 
+                  (contentType && contentType.toLowerCase().includes(activeCategory.toLowerCase())) ||
+                  content.title.toLowerCase().includes(activeCategory.toLowerCase());
+            }
           }
-        }
-        // Check if Social Media posts
-        else if (parentCategory === "Social Media") {
-          // Check if platform matches active category (like Facebook, Twitter)
-          const directMatch = platform.toLowerCase().includes(activeCategory.toLowerCase());
-          
-          // For Instagram posts (excluding reels)
-          const isInstagramPost = platform.toLowerCase().includes('instagram') && 
-                                 activeCategory === "Instagram Posts" && 
-                                 !isInstagramReels;
-          
-          matchesCategory = directMatch || isInstagramPost;
-        }
-        // Check if Articles
-        else if (parentCategory === "Articles") {
-          // Articles typically have content_type like "article", "blog", etc.
-          matchesCategory = (contentType && contentType.toLowerCase().includes('article')) || 
-                           (contentType && contentType.toLowerCase().includes('blog')) ||
-                           content.title.toLowerCase().includes(activeCategory.toLowerCase());
         }
       }
       
@@ -172,28 +204,34 @@ const Contents: React.FC = () => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
-  
-  // Handle main category click
+    // Handle main category click - improved logic
   const handleMainCategoryClick = (categoryName: string) => {
-    if (expandedCategory === categoryName) {
-      // If clicking the already expanded category, collapse it
+    // If "All" is selected, immediately apply filter and clear any expanded category
+    if (categoryName === "All") {
+      setActiveCategory("All");
       setExpandedCategory(null);
-      // If All is selected when collapsing, keep it, otherwise clear selection
-      setActiveCategory(activeCategory === "All" ? "All" : 
-                        categoryName === "All" ? "All" : activeCategory);
+      return;
+    }
+    
+    // If clicking on the already expanded category
+    if (expandedCategory === categoryName) {
+      // Just collapse without changing the active category
+      setExpandedCategory(null);
     } else {
       // Expand the clicked category
       setExpandedCategory(categoryName);
-      // If selecting "All", set it as active
-      if (categoryName === "All") {
-        setActiveCategory("All");
-      }
+      
+      // Also set the main category as active to show all items in this category
+      // This makes the filter behavior more intuitive
+      setActiveCategory(categoryName);
     }
   };
-    
-  // Handle subcategory click
+  
+  // Handle subcategory click - improved behavior
   const handleSubCategoryClick = (category: string) => {
     setActiveCategory(category);
+    // Keep the parent category expanded when selecting a subcategory
+    // This maintains context and makes the UI more intuitive
   };
   
   // Add CSS styles for animations
@@ -262,29 +300,41 @@ const Contents: React.FC = () => {
               )}>
                 <h1 className="text-3xl font-bold mb-2">Content Feed</h1>
                 <p className="text-gray-400 mb-8">Videos, articles, podcasts, and tutorials I've created</p>
-                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                  {/* Search input - full width on mobile, inline on desktop */}
-                  <div className="relative w-full sm:w-64 lg:w-72 order-1 sm:order-2 sm:ml-auto">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <input
-                      type="text"
-                      placeholder="Search content..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 pr-4 py-2 bg-gray-800/90 border border-gray-700 rounded-lg text-white w-full text-sm focus:outline-none focus:ring-1 focus:ring-[#FFB600] focus:border-transparent"
-                    />
+                  <div className="flex flex-col sm:flex-row gap-4 mb-8">                  {/* Search input - clean design without inner borders */}
+                  <div className="w-full sm:w-64 lg:w-72 order-1 sm:order-2 sm:ml-auto">
+                    <label className="relative block">
+                      <span className="sr-only">Search</span>
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <Search className="h-4 w-4 text-gray-400" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search content..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="block w-full rounded-full bg-[#1e293b]/70 py-2 pl-10 pr-3 text-white text-xs appearance-none focus:outline-none"
+                        style={{
+                          boxShadow: 'none',
+                          WebkitAppearance: 'none'
+                        }}
+                        spellCheck="false"
+                      />
+                    </label>
                   </div>
                   
                   {/* Categories container */}
-                  <div className="space-y-3 order-2 sm:order-1 w-full sm:w-auto">
-                    {/* Main Categories */}
+                  <div className="space-y-3 order-2 sm:order-1 w-full sm:w-auto">                    {/* Main Categories */}
                     <div className="flex flex-wrap gap-2">
                       {categoryGroups.map((group) => {
-                        // Determine if this category is active (either expanded or "All" selected)
-                        const isActive = expandedCategory === group.name || 
-                                        (group.name === "All" && activeCategory === "All") ||
-                                        (activeCategory !== "All" && 
-                                         categoryGroups.find(g => g.name === group.name)?.categories.includes(activeCategory));
+                        // Improved active state detection logic
+                        const isCategoryMatch = activeCategory === group.name;
+                        const isParentOfActive = group.name !== "All" && 
+                                              group.categories.includes(activeCategory);
+                        const isAllAndAllActive = group.name === "All" && activeCategory === "All";
+                        const isExpanded = expandedCategory === group.name;
+                        
+                        // Determine active state using improved logic
+                        const isActive = isCategoryMatch || isParentOfActive || isAllAndAllActive;
                         
                         return (
                           <button
@@ -295,6 +345,9 @@ const Contents: React.FC = () => {
                               isActive
                                 ? "bg-[#FFB600] text-[#151515] shadow-lg shadow-[#FFB600]/20"
                                 : "bg-gray-800 text-white hover:bg-gray-700 hover:shadow",
+                              isExpanded && !isActive
+                                ? "ring-2 ring-[#FFB600]/50" // Highlight expanded but not active
+                                : "",
                               "flex items-center gap-1.5"
                             )}
                           >
@@ -360,8 +413,7 @@ const Contents: React.FC = () => {
                         );
                       })}
                     </div>
-                    
-                    {/* Subcategories - animated container */}
+                      {/* Subcategories - improved animated container with better UX */}
                     <div 
                       className={cn(
                         "overflow-hidden transition-all duration-300 ease-in-out",
@@ -374,14 +426,25 @@ const Contents: React.FC = () => {
                       }}
                     >
                       <div className="bg-gray-900/60 backdrop-blur-sm p-3 rounded-lg border border-gray-800 max-h-[200px] overflow-y-auto subcategories-container">
-                        <h3 className="text-xs font-medium text-gray-400 mb-3 sticky top-0 bg-gray-900/90 py-1">
-                          {expandedCategory} Categories
-                        </h3>
+                        <div className="flex justify-between items-center sticky top-0 bg-gray-900/90 py-1">
+                          <h3 className="text-xs font-medium text-gray-400 mb-2">
+                            {expandedCategory} Categories
+                          </h3>
+                          {/* Show which subcategory is active as a chip/badge */}
+                          {activeCategory !== expandedCategory && activeCategory !== "All" && 
+                           expandedCategory && categoryGroups.find(g => g.name === expandedCategory)?.categories.includes(activeCategory) && (
+                            <span className="text-[10px] bg-[#FFB600]/20 text-[#FFB600] px-2 py-0.5 rounded-full">
+                              {activeCategory}
+                            </span>
+                          )}
+                        </div>
                         
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {expandedCategory && categoryGroups
                             .find(group => group.name === expandedCategory)
-                            ?.categories.map((category, idx) => (
+                            ?.categories
+                            .filter(category => category !== "All") // Don't show "All" in the subcategory list
+                            .map((category, idx) => (
                               <button
                                 key={category}
                                 onClick={() => handleSubCategoryClick(category)}
