@@ -7,14 +7,30 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+/.pnp
+.pnp.js
+
+# Build outputs
 dist
 dist-ssr
+build
+out
+.next
 *.local
+storybook-static
+
+# Testing
+/coverage
+.nyc_output
+__snapshots__
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json.example
+!.vscode/tasks.json.example
 .idea
 .DS_Store
 *.suo
@@ -22,32 +38,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
 # Environment variables
 .env
 .env.*
-.env.local
-.env.development
-.env.production
-.env.test
+!.env.example
+!.env.*.example
 
-# Secrets and keys
-**/keys/*
-**/secrets/*
-*.pem
-*.key
-*.p12
-*.pfx
-*.cert
+# Miscellaneous
+.cache
+.temp
+.tmp
+tmp
+*.tsbuildinfo
+.eslintcache
+.turbo
 
-# Build output and temporary files
-deploy/
-.temp/
-.cache/
+# Debug
+.clinic
+heap-captures
+isolate-*
 
-# CI/CD and Docker
-.docker-data/
-*.env.ci
-docker-compose.override.yml
-
-# Jenkins related
-jenkins_home/
+# System specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
